@@ -98,7 +98,7 @@ export default function AdminDashboard() {
               <div className="flex items-center justify-between">
                 <div>
                   <p className="text-sm font-medium text-gray-600">Pending</p>
-                  <p className="text-3xl font-bold text-gray-900">{stats?.pendingRequests || 0}</p>
+                  <p className="text-3xl font-bold text-gray-900">{stats?.pendingRequests ?? 0}</p>
                   <p className="text-xs text-red-600 flex items-center mt-1">
                     <Clock className="h-3 w-3 mr-1" />
                     5 overdue
@@ -116,7 +116,7 @@ export default function AdminDashboard() {
               <div className="flex items-center justify-between">
                 <div>
                   <p className="text-sm font-medium text-gray-600">Total Value</p>
-                  <p className="text-3xl font-bold text-gray-900">₹{(stats?.totalValue || 0).toLocaleString()}</p>
+                  <p className="text-3xl font-bold text-gray-900">₹{(stats?.totalValue ?? 0).toLocaleString()}</p>
                   <p className="text-xs text-blue-600 flex items-center mt-1">
                     <TrendingUp className="h-3 w-3 mr-1" />
                     This month
@@ -234,7 +234,7 @@ export default function AdminDashboard() {
                   <tr>
                     <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                       <Checkbox
-                        checked={selectedRequests.length === requests?.length && requests?.length > 0}
+                        checked={Array.isArray(requests) && selectedRequests.length === requests.length && requests.length > 0}
                         onCheckedChange={handleSelectAll}
                       />
                     </th>

@@ -46,7 +46,7 @@ export function Navbar() {
     },
   });
 
-  const unreadNotifications = notifications?.filter((n: any) => !n.isRead) || [];
+  const unreadNotifications = Array.isArray(notifications) ? notifications.filter((n: any) => !n.isRead) : [];
 
   const handleNavigation = (path: string) => {
     setLocation(path);
@@ -90,7 +90,7 @@ export function Navbar() {
                 <List className="h-4 w-4 mr-1" />
                 My Requests
               </Button>
-              {user?.role === "admin" && (
+              {user && user.role === "admin" && (
                 <Button
                   variant="ghost"
                   className="text-white hover:text-[hsl(32,100%,50%)] hover:bg-transparent px-3 py-2 text-sm font-medium"
@@ -122,18 +122,18 @@ export function Navbar() {
                 <Button variant="ghost" className="flex items-center space-x-2 text-white hover:text-[hsl(32,100%,50%)] hover:bg-transparent">
                   <div className="w-8 h-8 bg-[hsl(32,100%,50%)] rounded-full flex items-center justify-center">
                     <span className="text-white font-semibold text-sm">
-                      {user?.fullName?.split(' ').map((n: string) => n[0]).join('').toUpperCase() || 'U'}
+                      {user?.fullName ? user.fullName.split(' ').map((n: string) => n[0]).join('').toUpperCase() : 'U'}
                     </span>
                   </div>
-                  <span className="hidden md:inline">{user?.fullName || 'User'}</span>
+                  <span className="hidden md:inline">{user?.fullName ?? 'User'}</span>
                   <ChevronDown className="h-4 w-4" />
                 </Button>
               </DropdownMenuTrigger>
               <DropdownMenuContent align="end" className="w-56">
                 <div className="px-2 py-1.5 text-sm">
-                  <div className="font-medium">{user?.fullName}</div>
-                  <div className="text-gray-500">{user?.email}</div>
-                  <div className="text-gray-500 text-xs">{user?.employeeNumber}</div>
+                  <div className="font-medium">{user?.fullName ?? 'User'}</div>
+                  <div className="text-gray-500">{user?.email ?? 'No email'}</div>
+                  <div className="text-gray-500 text-xs">{user?.employeeNumber ?? 'N/A'}</div>
                 </div>
                 <DropdownMenuSeparator />
                 <DropdownMenuItem>
