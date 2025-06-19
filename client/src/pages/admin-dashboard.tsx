@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { useQuery } from "@tanstack/react-query";
-import { Search, Download, Filter, TrendingUp, Clock, DollarSign, BarChart3 } from "lucide-react";
+import { Search, Download, Filter, TrendingUp, Clock, DollarSign, BarChart3, Package, Calendar, MapPin } from "lucide-react";
 
 import { Navbar } from "@/components/layout/navbar";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -9,6 +9,9 @@ import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { StatusBadge } from "@/components/ui/status-badge";
 import { Checkbox } from "@/components/ui/checkbox";
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import { Badge } from "@/components/ui/badge";
+import { Separator } from "@/components/ui/separator";
 
 export default function AdminDashboard() {
   const [filters, setFilters] = useState({
@@ -18,6 +21,8 @@ export default function AdminDashboard() {
     search: "",
   });
   const [selectedRequests, setSelectedRequests] = useState<number[]>([]);
+  const [selectedRequest, setSelectedRequest] = useState<any>(null);
+  const [showDetailsModal, setShowDetailsModal] = useState(false);
 
   const { data: stats } = useQuery({
     queryKey: ["/api/dashboard/stats"],
@@ -27,8 +32,18 @@ export default function AdminDashboard() {
     queryKey: ["/api/purchase-requests", filters],
   });
 
+  const { data: requestDetails, isLoading: isLoadingDetails } = useQuery({
+    queryKey: [`/api/purchase-requests/${selectedRequest?.id}/details`],
+    enabled: !!selectedRequest,
+  });
+
   const handleFilterChange = (key: string, value: string) => {
     setFilters((prev) => ({ ...prev, [key]: value }));
+  };
+
+  const handleViewDetails = (request: any) => {
+    setSelectedRequest(request);
+    setShowDetailsModal(true);
   };
 
   const handleSelectRequest = (requestId: number) => {
@@ -306,7 +321,12 @@ export default function AdminDashboard() {
                         </td>
                         <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
                           <div className="flex space-x-2">
-                            <Button variant="ghost" size="sm" className="text-[hsl(207,90%,54%)]">
+                            <Button 
+                              variant="ghost" 
+                              size="sm" 
+                              className="text-[hsl(207,90%,54%)]"
+                              onClick={() => handleViewDetails(request)}
+                            >
                               View
                             </Button>
                             <Button variant="ghost" size="sm" className="text-green-600">

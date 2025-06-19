@@ -28,7 +28,7 @@ export default function MyRequests() {
   });
 
   const { data: requestDetails, isLoading: isLoadingDetails } = useQuery({
-    queryKey: ["/api/purchase-requests", selectedRequest?.id, "details"],
+    queryKey: [`/api/purchase-requests/${selectedRequest?.id}/details`],
     enabled: !!selectedRequest,
   });
 
