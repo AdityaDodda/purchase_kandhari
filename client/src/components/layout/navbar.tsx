@@ -33,8 +33,12 @@ export function Navbar() {
       await apiRequest("POST", "/api/auth/logout");
     },
     onSuccess: () => {
+      // Clear all queries and cache
       queryClient.clear();
+      // Reset the user query to undefined to trigger auth check
+      queryClient.setQueryData(["/api/auth/user"], null);
       toast({ title: "Logged out", description: "You have been logged out successfully." });
+      // Redirect to root - AuthWrapper will show login page for unauthenticated users
       setLocation("/");
     },
     onError: (error) => {
