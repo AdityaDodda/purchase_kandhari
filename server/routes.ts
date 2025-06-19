@@ -474,9 +474,22 @@ export function registerRoutes(app: Express): Server {
   });
 
   // Statistics routes
-  app.get("/api/dashboard/stats", requireAuth, async (req, res) => {
+  app.get("/api/dashboard/stats", requireAuth, async (req: any, res) => {
     try {
-      const stats = await storage.getPurchaseRequestStats();
+      const user = await storage.getUser(req.session.user.id);
+      if (!user) {
+        return res.status(404).json({ message: "User not found" });
+      }
+      
+      let stats;
+      if (user.role === "admin") {
+        // Admin sees all requests
+        stats = await storage.getPurchaseRequestStats();
+      } else {
+        // Regular users see only their own requests
+        stats = await storage.getPurchaseRequestStatsByUser(req.session.user.id);
+      }
+      
       res.json(stats);
     } catch (error) {
       console.error("Get dashboard stats error:", error);

@@ -40,6 +40,7 @@ export interface IStorage {
   getPurchaseRequestsByUser(userId: number, filters?: any): Promise<PurchaseRequest[]>;
   getAllPurchaseRequests(filters?: any): Promise<PurchaseRequest[]>;
   getPurchaseRequestStats(): Promise<any>;
+  getPurchaseRequestStatsByUser(userId: number): Promise<any>;
   generateRequisitionNumber(department: string): Promise<string>;
 
   // Line Item operations
@@ -239,6 +240,50 @@ export class DatabaseStorage implements IStorage {
       .select({ sum: sum(purchaseRequests.totalEstimatedCost) })
       .from(purchaseRequests)
       .where(eq(purchaseRequests.status, 'approved'));
+
+    return {
+      totalRequests: totalRequests.count,
+      pendingRequests: pendingRequests.count,
+      approvedRequests: approvedRequests.count,
+      rejectedRequests: rejectedRequests.count,
+      totalValue: totalValue.sum || 0,
+    };
+  }
+
+  async getPurchaseRequestStatsByUser(userId: number): Promise<any> {
+    const [totalRequests] = await db
+      .select({ count: count() })
+      .from(purchaseRequests)
+      .where(eq(purchaseRequests.requesterId, userId));
+    const [pendingRequests] = await db
+      .select({ count: count() })
+      .from(purchaseRequests)
+      .where(and(
+        eq(purchaseRequests.requesterId, userId),
+        eq(purchaseRequests.status, 'pending')
+      ));
+    const [approvedRequests] = await db
+      .select({ count: count() })
+      .from(purchaseRequests)
+      .where(and(
+        eq(purchaseRequests.requesterId, userId),
+        eq(purchaseRequests.status, 'approved')
+      ));
+    const [rejectedRequests] = await db
+      .select({ count: count() })
+      .from(purchaseRequests)
+      .where(and(
+        eq(purchaseRequests.requesterId, userId),
+        eq(purchaseRequests.status, 'rejected')
+      ));
+
+    const [totalValue] = await db
+      .select({ sum: sum(purchaseRequests.totalEstimatedCost) })
+      .from(purchaseRequests)
+      .where(and(
+        eq(purchaseRequests.requesterId, userId),
+        eq(purchaseRequests.status, 'approved')
+      ));
 
     return {
       totalRequests: totalRequests.count,

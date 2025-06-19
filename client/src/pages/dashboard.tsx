@@ -1,15 +1,20 @@
+import { useState } from "react";
 import { useQuery } from "@tanstack/react-query";
-import { FileText, Clock, CheckCircle, XCircle, Plus, List, ClipboardCheck } from "lucide-react";
+import { FileText, Clock, CheckCircle, XCircle, Plus, List, ClipboardCheck, Package, Calendar, MapPin, DollarSign } from "lucide-react";
 
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Navbar } from "@/components/layout/navbar";
 import { StatusBadge } from "@/components/ui/status-badge";
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import { Separator } from "@/components/ui/separator";
 import { useLocation } from "wouter";
 
 export default function Dashboard() {
   const [, setLocation] = useLocation();
+  const [selectedRequest, setSelectedRequest] = useState<any>(null);
+  const [showDetailsModal, setShowDetailsModal] = useState(false);
 
   const { data: stats } = useQuery({
     queryKey: ["/api/dashboard/stats"],
@@ -18,6 +23,16 @@ export default function Dashboard() {
   const { data: recentRequests } = useQuery({
     queryKey: ["/api/purchase-requests", { limit: 5 }],
   });
+
+  const { data: requestDetails, isLoading: isLoadingDetails } = useQuery({
+    queryKey: ["/api/purchase-requests", selectedRequest?.id, "details"],
+    enabled: !!selectedRequest?.id,
+  });
+
+  const handleViewDetails = (request: any) => {
+    setSelectedRequest(request);
+    setShowDetailsModal(true);
+  };
 
   return (
     <div className="min-h-screen bg-gray-50">
