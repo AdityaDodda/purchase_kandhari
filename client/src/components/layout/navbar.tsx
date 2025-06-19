@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { useLocation } from "wouter";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
-import { Building, Bell, User, ChevronDown, LogOut, Home, FileText, List, ClipboardCheck } from "lucide-react";
+import { Building, Bell, User, ChevronDown, LogOut, Home, FileText, List, ClipboardCheck, BarChart3, Database } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -99,15 +99,33 @@ export function Navbar() {
                 <List className="h-4 w-4 mr-1" />
                 My Requests
               </Button>
+              <Button
+                variant="ghost"
+                className="text-white hover:text-[hsl(32,100%,50%)] hover:bg-transparent px-3 py-2 text-sm font-medium"
+                onClick={() => handleNavigation("/reports")}
+              >
+                <BarChart3 className="h-4 w-4 mr-1" />
+                Reports
+              </Button>
               {user && user.role === "admin" && (
-                <Button
-                  variant="ghost"
-                  className="text-white hover:text-[hsl(32,100%,50%)] hover:bg-transparent px-3 py-2 text-sm font-medium"
-                  onClick={() => handleNavigation("/admin")}
-                >
-                  <ClipboardCheck className="h-4 w-4 mr-1" />
-                  Admin
-                </Button>
+                <>
+                  <Button
+                    variant="ghost"
+                    className="text-white hover:text-[hsl(32,100%,50%)] hover:bg-transparent px-3 py-2 text-sm font-medium"
+                    onClick={() => handleNavigation("/admin")}
+                  >
+                    <ClipboardCheck className="h-4 w-4 mr-1" />
+                    Admin Dashboard
+                  </Button>
+                  <Button
+                    variant="ghost"
+                    className="text-white hover:text-[hsl(32,100%,50%)] hover:bg-transparent px-3 py-2 text-sm font-medium"
+                    onClick={() => handleNavigation("/admin-masters")}
+                  >
+                    <Database className="h-4 w-4 mr-1" />
+                    Masters
+                  </Button>
+                </>
               )}
             </div>
           </div>
