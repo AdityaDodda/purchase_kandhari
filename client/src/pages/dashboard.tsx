@@ -23,7 +23,7 @@ export default function Dashboard() {
     <div className="min-h-screen bg-gray-50">
       <Navbar />
       
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 pt-24">
         {/* Header */}
         <div className="mb-8">
           <h1 className="text-3xl font-bold text-gray-900 mb-2">Purchase Request Dashboard</h1>
@@ -40,7 +40,7 @@ export default function Dashboard() {
                 </div>
                 <div className="ml-4">
                   <p className="text-sm font-medium text-gray-600">Total Requests</p>
-                  <p className="text-2xl font-bold text-gray-900">{stats?.totalRequests || 0}</p>
+                  <p className="text-2xl font-bold text-gray-900">{stats?.totalRequests ?? 0}</p>
                 </div>
               </div>
             </CardContent>
@@ -54,7 +54,7 @@ export default function Dashboard() {
                 </div>
                 <div className="ml-4">
                   <p className="text-sm font-medium text-gray-600">Pending Approval</p>
-                  <p className="text-2xl font-bold text-gray-900">{stats?.pendingRequests || 0}</p>
+                  <p className="text-2xl font-bold text-gray-900">{stats?.pendingRequests ?? 0}</p>
                 </div>
               </div>
             </CardContent>
@@ -68,7 +68,7 @@ export default function Dashboard() {
                 </div>
                 <div className="ml-4">
                   <p className="text-sm font-medium text-gray-600">Approved</p>
-                  <p className="text-2xl font-bold text-gray-900">{stats?.approvedRequests || 0}</p>
+                  <p className="text-2xl font-bold text-gray-900">{stats?.approvedRequests ?? 0}</p>
                 </div>
               </div>
             </CardContent>
@@ -82,7 +82,7 @@ export default function Dashboard() {
                 </div>
                 <div className="ml-4">
                   <p className="text-sm font-medium text-gray-600">Rejected</p>
-                  <p className="text-2xl font-bold text-gray-900">{stats?.rejectedRequests || 0}</p>
+                  <p className="text-2xl font-bold text-gray-900">{stats?.rejectedRequests ?? 0}</p>
                 </div>
               </div>
             </CardContent>
