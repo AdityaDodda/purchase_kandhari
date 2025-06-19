@@ -192,7 +192,12 @@ export default function Dashboard() {
                         </td>
                         <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
                           <div className="flex space-x-2">
-                            <Button variant="ghost" size="sm" className="text-[hsl(207,90%,54%)]">
+                            <Button 
+                              variant="ghost" 
+                              size="sm" 
+                              className="text-[hsl(207,90%,54%)]"
+                              onClick={() => handleViewDetails(request)}
+                            >
                               View
                             </Button>
                             <Button variant="ghost" size="sm">
@@ -214,6 +219,172 @@ export default function Dashboard() {
             </div>
           </CardContent>
         </Card>
+
+        {/* Detailed View Modal */}
+        <Dialog open={showDetailsModal} onOpenChange={setShowDetailsModal}>
+          <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto">
+            <DialogHeader>
+              <div className="flex justify-between items-start">
+                <div>
+                  <DialogTitle className="text-xl font-bold">
+                    {selectedRequest?.title}
+                  </DialogTitle>
+                  <p className="text-sm text-gray-500 mt-1">
+                    {selectedRequest?.requisitionNumber}
+                  </p>
+                </div>
+                <StatusBadge status={selectedRequest?.status} />
+              </div>
+            </DialogHeader>
+
+            {isLoadingDetails ? (
+              <div className="flex justify-center py-8">
+                <div className="animate-pulse space-y-4 w-full">
+                  <div className="h-4 bg-gray-200 rounded w-3/4"></div>
+                  <div className="h-4 bg-gray-200 rounded w-1/2"></div>
+                  <div className="h-32 bg-gray-200 rounded"></div>
+                </div>
+              </div>
+            ) : (
+              <div className="space-y-6">
+                {/* Request Information */}
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                  <Card>
+                    <CardHeader className="pb-3">
+                      <CardTitle className="text-lg flex items-center">
+                        <Package className="h-5 w-5 mr-2 text-blue-600" />
+                        Request Details
+                      </CardTitle>
+                    </CardHeader>
+                    <CardContent className="space-y-3">
+                      <div className="flex items-center text-sm">
+                        <Calendar className="h-4 w-4 mr-2 text-gray-500" />
+                        <span className="text-gray-500">Submitted:</span>
+                        <span className="ml-2 font-medium">
+                          {selectedRequest && new Date(selectedRequest.requestDate).toLocaleDateString()}
+                        </span>
+                      </div>
+                      <div className="flex items-center text-sm">
+                        <MapPin className="h-4 w-4 mr-2 text-gray-500" />
+                        <span className="text-gray-500">Department:</span>
+                        <span className="ml-2 font-medium">{selectedRequest?.department}</span>
+                      </div>
+                      <div className="flex items-center text-sm">
+                        <MapPin className="h-4 w-4 mr-2 text-gray-500" />
+                        <span className="text-gray-500">Location:</span>
+                        <span className="ml-2 font-medium">{selectedRequest?.location}</span>
+                      </div>
+                      <div className="flex items-center text-sm">
+                        <DollarSign className="h-4 w-4 mr-2 text-gray-500" />
+                        <span className="text-gray-500">Total Cost:</span>
+                        <span className="ml-2 font-medium text-green-600">
+                          ₹{selectedRequest && parseFloat(selectedRequest.totalEstimatedCost || 0).toLocaleString()}
+                        </span>
+                      </div>
+                    </CardContent>
+                  </Card>
+
+                  <Card>
+                    <CardHeader className="pb-3">
+                      <CardTitle className="text-lg">Business Justification</CardTitle>
+                    </CardHeader>
+                    <CardContent>
+                      <div className="space-y-2">
+                        <Badge variant="outline">{selectedRequest?.businessJustificationCode}</Badge>
+                        <p className="text-sm text-gray-700">
+                          {selectedRequest?.businessJustificationDetails}
+                        </p>
+                      </div>
+                    </CardContent>
+                  </Card>
+                </div>
+
+                <Separator />
+
+                {/* Line Items */}
+                <div>
+                  <h3 className="text-lg font-semibold mb-4 flex items-center">
+                    <Package className="h-5 w-5 mr-2 text-blue-600" />
+                    Line Items ({requestDetails?.lineItems?.length || 0})
+                  </h3>
+                  
+                  <div className="space-y-3">
+                    {requestDetails?.lineItems && requestDetails.lineItems.length > 0 ? (
+                      requestDetails.lineItems.map((item: any, index: number) => (
+                        <Card key={item.id} className="border-l-4 border-l-blue-500">
+                          <CardContent className="p-4">
+                            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                              <div className="md:col-span-2">
+                                <h4 className="font-semibold text-gray-900 mb-2">
+                                  {index + 1}. {item.itemName}
+                                </h4>
+                                {item.itemJustification && (
+                                  <p className="text-sm text-gray-600 mb-2">
+                                    {item.itemJustification}
+                                  </p>
+                                )}
+                                <div className="flex flex-wrap gap-4 text-sm text-gray-500">
+                                  <span>Quantity: <strong>{item.requiredQuantity} {item.unitOfMeasure}</strong></span>
+                                  <span>Required by: <strong>{new Date(item.requiredByDate).toLocaleDateString()}</strong></span>
+                                  <span>Delivery: <strong>{item.deliveryLocation}</strong></span>
+                                </div>
+                              </div>
+                              <div className="text-right">
+                                <div className="text-lg font-bold text-green-600">
+                                  ₹{parseFloat(item.estimatedCost || 0).toLocaleString()}
+                                </div>
+                                <div className="text-sm text-gray-500">
+                                  ₹{(parseFloat(item.estimatedCost || 0) / item.requiredQuantity).toFixed(2)} per {item.unitOfMeasure}
+                                </div>
+                              </div>
+                            </div>
+                          </CardContent>
+                        </Card>
+                      ))
+                    ) : (
+                      <div className="text-center py-8 text-gray-500">
+                        <Package className="h-12 w-12 mx-auto mb-4 opacity-50" />
+                        <p>No line items found for this request</p>
+                      </div>
+                    )}
+                  </div>
+                </div>
+
+                {/* Progress Information */}
+                {selectedRequest && (
+                  <div>
+                    <h3 className="text-lg font-semibold mb-4">Approval Progress</h3>
+                    <div className="space-y-2">
+                      <div className="flex justify-between items-center">
+                        <span className="text-sm font-medium text-gray-700">
+                          Level {selectedRequest.currentApprovalLevel} of 4
+                        </span>
+                        <span className="text-sm text-gray-500">
+                          {((selectedRequest.currentApprovalLevel / 4) * 100).toFixed(0)}% Complete
+                        </span>
+                      </div>
+                      <div className="w-full bg-gray-200 rounded-full h-3">
+                        <div
+                          className="bg-blue-600 h-3 rounded-full transition-all duration-300"
+                          style={{ width: `${(selectedRequest.currentApprovalLevel / 4) * 100}%` }}
+                        />
+                      </div>
+                      <p className="text-sm text-gray-600 mt-2">
+                        {selectedRequest.status === "approved" 
+                          ? "Request approved - Procurement in progress" 
+                          : selectedRequest.status === "rejected"
+                          ? "Request has been rejected"
+                          : selectedRequest.status === "pending"
+                          ? "Awaiting approval from next level"
+                          : "Under review"}
+                      </p>
+                    </div>
+                  </div>
+                )}
+              </div>
+            )}
+          </DialogContent>
+        </Dialog>
       </div>
     </div>
   );
