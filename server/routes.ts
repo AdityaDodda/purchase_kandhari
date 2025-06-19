@@ -264,6 +264,33 @@ export function registerRoutes(app: Express): Server {
     }
   });
 
+  app.get("/api/purchase-requests/:id/details", requireAuth, async (req: any, res) => {
+    try {
+      const id = parseInt(req.params.id);
+      const request = await storage.getPurchaseRequestWithDetails(id);
+      
+      if (!request) {
+        return res.status(404).json({ message: "Purchase request not found" });
+      }
+
+      // Check if user has permission to view this request
+      if (request.requesterId !== req.session.user.id && req.session.user.role !== 'admin') {
+        return res.status(403).json({ message: "Forbidden" });
+      }
+
+      // Fetch line items
+      const lineItems = await storage.getLineItemsByRequest(id);
+      
+      res.json({
+        ...request,
+        lineItems
+      });
+    } catch (error) {
+      console.error("Get purchase request details error:", error);
+      res.status(500).json({ message: "Internal server error" });
+    }
+  });
+
   app.put("/api/purchase-requests/:id", requireAuth, async (req: any, res) => {
     try {
       const id = parseInt(req.params.id);
