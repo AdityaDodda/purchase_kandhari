@@ -483,6 +483,191 @@ export class DatabaseStorage implements IStorage {
       .set({ isRead: true })
       .where(eq(notifications.id, id));
   }
+
+  // Master Data implementations for Admin system
+  async getAllUsers(): Promise<User[]> {
+    return await db.select().from(users);
+  }
+
+  async deleteUser(id: number): Promise<void> {
+    await db.delete(users).where(eq(users.id, id));
+  }
+
+  // Entity Master implementations
+  async getAllEntities(): Promise<Entity[]> {
+    return await db.select().from(entities);
+  }
+
+  async createEntity(entityData: InsertEntity): Promise<Entity> {
+    const [entity] = await db.insert(entities).values(entityData).returning();
+    return entity;
+  }
+
+  async updateEntity(id: number, entityData: Partial<InsertEntity>): Promise<Entity> {
+    const [entity] = await db.update(entities)
+      .set({ ...entityData, updatedAt: new Date() })
+      .where(eq(entities.id, id))
+      .returning();
+    return entity;
+  }
+
+  async deleteEntity(id: number): Promise<void> {
+    await db.delete(entities).where(eq(entities.id, id));
+  }
+
+  // Department Master implementations
+  async getAllDepartments(): Promise<Department[]> {
+    return await db.select().from(departments);
+  }
+
+  async createDepartment(departmentData: InsertDepartment): Promise<Department> {
+    const [department] = await db.insert(departments).values(departmentData).returning();
+    return department;
+  }
+
+  async updateDepartment(id: number, departmentData: Partial<InsertDepartment>): Promise<Department> {
+    const [department] = await db.update(departments)
+      .set({ ...departmentData, updatedAt: new Date() })
+      .where(eq(departments.id, id))
+      .returning();
+    return department;
+  }
+
+  async deleteDepartment(id: number): Promise<void> {
+    await db.delete(departments).where(eq(departments.id, id));
+  }
+
+  // Location Master implementations
+  async getAllLocations(): Promise<Location[]> {
+    return await db.select().from(locations);
+  }
+
+  async createLocation(locationData: InsertLocation): Promise<Location> {
+    const [location] = await db.insert(locations).values(locationData).returning();
+    return location;
+  }
+
+  async updateLocation(id: number, locationData: Partial<InsertLocation>): Promise<Location> {
+    const [location] = await db.update(locations)
+      .set({ ...locationData, updatedAt: new Date() })
+      .where(eq(locations.id, id))
+      .returning();
+    return location;
+  }
+
+  async deleteLocation(id: number): Promise<void> {
+    await db.delete(locations).where(eq(locations.id, id));
+  }
+
+  // Role Master implementations
+  async getAllRoles(): Promise<Role[]> {
+    return await db.select().from(roles);
+  }
+
+  async createRole(roleData: InsertRole): Promise<Role> {
+    const [role] = await db.insert(roles).values(roleData).returning();
+    return role;
+  }
+
+  async updateRole(id: number, roleData: Partial<InsertRole>): Promise<Role> {
+    const [role] = await db.update(roles)
+      .set({ ...roleData, updatedAt: new Date() })
+      .where(eq(roles.id, id))
+      .returning();
+    return role;
+  }
+
+  async deleteRole(id: number): Promise<void> {
+    await db.delete(roles).where(eq(roles.id, id));
+  }
+
+  // Approval Matrix implementations
+  async getAllApprovalMatrix(): Promise<ApprovalMatrix[]> {
+    return await db.select().from(approvalMatrix);
+  }
+
+  async createApprovalMatrix(matrixData: InsertApprovalMatrix): Promise<ApprovalMatrix> {
+    const [matrix] = await db.insert(approvalMatrix).values(matrixData).returning();
+    return matrix;
+  }
+
+  async updateApprovalMatrix(id: number, matrixData: Partial<InsertApprovalMatrix>): Promise<ApprovalMatrix> {
+    const [matrix] = await db.update(approvalMatrix)
+      .set({ ...matrixData, updatedAt: new Date() })
+      .where(eq(approvalMatrix.id, id))
+      .returning();
+    return matrix;
+  }
+
+  async deleteApprovalMatrix(id: number): Promise<void> {
+    await db.delete(approvalMatrix).where(eq(approvalMatrix.id, id));
+  }
+
+  // Escalation Matrix implementations
+  async getAllEscalationMatrix(): Promise<EscalationMatrix[]> {
+    return await db.select().from(escalationMatrix);
+  }
+
+  async createEscalationMatrix(matrixData: InsertEscalationMatrix): Promise<EscalationMatrix> {
+    const [matrix] = await db.insert(escalationMatrix).values(matrixData).returning();
+    return matrix;
+  }
+
+  async updateEscalationMatrix(id: number, matrixData: Partial<InsertEscalationMatrix>): Promise<EscalationMatrix> {
+    const [matrix] = await db.update(escalationMatrix)
+      .set({ ...matrixData, updatedAt: new Date() })
+      .where(eq(escalationMatrix.id, id))
+      .returning();
+    return matrix;
+  }
+
+  async deleteEscalationMatrix(id: number): Promise<void> {
+    await db.delete(escalationMatrix).where(eq(escalationMatrix.id, id));
+  }
+
+  // Inventory Master implementations
+  async getAllInventory(): Promise<Inventory[]> {
+    return await db.select().from(inventory);
+  }
+
+  async createInventory(itemData: InsertInventory): Promise<Inventory> {
+    const [item] = await db.insert(inventory).values(itemData).returning();
+    return item;
+  }
+
+  async updateInventory(id: number, itemData: Partial<InsertInventory>): Promise<Inventory> {
+    const [item] = await db.update(inventory)
+      .set({ ...itemData, updatedAt: new Date() })
+      .where(eq(inventory.id, id))
+      .returning();
+    return item;
+  }
+
+  async deleteInventory(id: number): Promise<void> {
+    await db.delete(inventory).where(eq(inventory.id, id));
+  }
+
+  // Vendor Master implementations
+  async getAllVendors(): Promise<Vendor[]> {
+    return await db.select().from(vendors);
+  }
+
+  async createVendor(vendorData: InsertVendor): Promise<Vendor> {
+    const [vendor] = await db.insert(vendors).values(vendorData).returning();
+    return vendor;
+  }
+
+  async updateVendor(id: number, vendorData: Partial<InsertVendor>): Promise<Vendor> {
+    const [vendor] = await db.update(vendors)
+      .set({ ...vendorData, updatedAt: new Date() })
+      .where(eq(vendors.id, id))
+      .returning();
+    return vendor;
+  }
+
+  async deleteVendor(id: number): Promise<void> {
+    await db.delete(vendors).where(eq(vendors.id, id));
+  }
 }
 
 export const storage = new DatabaseStorage();
