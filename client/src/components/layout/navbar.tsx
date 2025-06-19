@@ -74,10 +74,10 @@ export function Navbar() {
               <Building className="h-8 w-8 text-white mr-3" />
               <span className="text-white font-bold text-xl">Kandhari Global Beverages</span>
             </div>
-            <div className="hidden md:ml-8 md:flex md:space-x-8">
+            <div className="hidden md:ml-6 md:flex md:space-x-4">
               <Button
                 variant="ghost"
-                className="text-white hover:text-[hsl(32,100%,50%)] hover:bg-transparent px-3 py-2 text-sm font-medium"
+                className="text-white hover:text-[hsl(32,100%,50%)] hover:bg-transparent px-2 py-2 text-sm font-medium"
                 onClick={() => handleNavigation("/")}
               >
                 <Home className="h-4 w-4 mr-1" />
@@ -85,23 +85,23 @@ export function Navbar() {
               </Button>
               <Button
                 variant="ghost"
-                className="text-white hover:text-[hsl(32,100%,50%)] hover:bg-transparent px-3 py-2 text-sm font-medium"
+                className="text-white hover:text-[hsl(32,100%,50%)] hover:bg-transparent px-2 py-2 text-sm font-medium"
                 onClick={() => handleNavigation("/new-request")}
               >
                 <FileText className="h-4 w-4 mr-1" />
-                New Request
+                New
               </Button>
               <Button
                 variant="ghost"
-                className="text-white hover:text-[hsl(32,100%,50%)] hover:bg-transparent px-3 py-2 text-sm font-medium"
+                className="text-white hover:text-[hsl(32,100%,50%)] hover:bg-transparent px-2 py-2 text-sm font-medium"
                 onClick={() => handleNavigation("/my-requests")}
               >
                 <List className="h-4 w-4 mr-1" />
-                My Requests
+                Requests
               </Button>
               <Button
                 variant="ghost"
-                className="text-white hover:text-[hsl(32,100%,50%)] hover:bg-transparent px-3 py-2 text-sm font-medium"
+                className="text-white hover:text-[hsl(32,100%,50%)] hover:bg-transparent px-2 py-2 text-sm font-medium"
                 onClick={() => handleNavigation("/reports")}
               >
                 <BarChart3 className="h-4 w-4 mr-1" />
@@ -111,15 +111,15 @@ export function Navbar() {
                 <>
                   <Button
                     variant="ghost"
-                    className="text-white hover:text-[hsl(32,100%,50%)] hover:bg-transparent px-3 py-2 text-sm font-medium"
+                    className="text-white hover:text-[hsl(32,100%,50%)] hover:bg-transparent px-2 py-2 text-sm font-medium"
                     onClick={() => handleNavigation("/admin")}
                   >
                     <ClipboardCheck className="h-4 w-4 mr-1" />
-                    Admin Dashboard
+                    Admin
                   </Button>
                   <Button
                     variant="ghost"
-                    className="text-white hover:text-[hsl(32,100%,50%)] hover:bg-transparent px-3 py-2 text-sm font-medium"
+                    className="text-white hover:text-[hsl(32,100%,50%)] hover:bg-transparent px-2 py-2 text-sm font-medium"
                     onClick={() => handleNavigation("/admin-masters")}
                   >
                     <Database className="h-4 w-4 mr-1" />
