@@ -34,6 +34,11 @@ export default function Login() {
     formState: { errors },
   } = useForm<LoginFormData>({
     resolver: zodResolver(loginSchema),
+    defaultValues: {
+      employeeNumber: "",
+      password: "",
+      rememberMe: false,
+    },
   });
 
   const loginMutation = useMutation({
@@ -82,9 +87,12 @@ export default function Login() {
           <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
             {Object.keys(errors).length > 0 && (
               <div className="text-red-500 text-sm">
-                Form errors: {JSON.stringify(errors)}
+                Form errors: {Object.keys(errors).map(key => `${key}: ${errors[key as keyof typeof errors]?.message}`).join(', ')}
               </div>
             )}
+            <div className="text-blue-500 text-sm">
+              Debug: Form ready, {Object.keys(errors).length} errors
+            </div>
             <div className="space-y-2">
               <Label htmlFor="employeeNumber">Employee Number</Label>
               <div className="relative">
@@ -141,6 +149,10 @@ export default function Login() {
               type="submit"
               className="w-full bg-[hsl(207,90%,54%)] hover:bg-[hsl(211,100%,29%)]"
               disabled={loginMutation.isPending}
+              onClick={(e) => {
+                console.log("Button clicked!");
+                // Don't prevent default - let form handle it
+              }}
             >
               {loginMutation.isPending ? "Signing in..." : "Sign In"}
             </Button>
