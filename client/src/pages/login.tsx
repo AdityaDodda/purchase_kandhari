@@ -38,15 +38,20 @@ export default function Login() {
 
   const loginMutation = useMutation({
     mutationFn: async (data: LoginFormData) => {
+      console.log("Login attempt with data:", data);
       const response = await apiRequest("POST", "/api/auth/login", data);
-      return response.json();
+      const result = await response.json();
+      console.log("Login response:", result);
+      return result;
     },
-    onSuccess: () => {
+    onSuccess: (data) => {
+      console.log("Login successful:", data);
       queryClient.invalidateQueries({ queryKey: ["/api/auth/user"] });
       toast({ title: "Welcome back!", description: "You have been logged in successfully." });
       setLocation("/");
     },
     onError: (error) => {
+      console.error("Login error:", error);
       toast({
         title: "Login failed",
         description: error.message,
@@ -56,6 +61,8 @@ export default function Login() {
   });
 
   const onSubmit = (data: LoginFormData) => {
+    console.log("Form submitted with data:", data);
+    console.log("Mutation state before:", loginMutation.status);
     loginMutation.mutate(data);
   };
 
@@ -73,6 +80,11 @@ export default function Login() {
         </CardHeader>
         <CardContent>
           <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
+            {Object.keys(errors).length > 0 && (
+              <div className="text-red-500 text-sm">
+                Form errors: {JSON.stringify(errors)}
+              </div>
+            )}
             <div className="space-y-2">
               <Label htmlFor="employeeNumber">Employee Number</Label>
               <div className="relative">
