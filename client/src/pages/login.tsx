@@ -43,20 +43,15 @@ export default function Login() {
 
   const loginMutation = useMutation({
     mutationFn: async (data: LoginFormData) => {
-      console.log("Login attempt with data:", data);
       const response = await apiRequest("POST", "/api/auth/login", data);
-      const result = await response.json();
-      console.log("Login response:", result);
-      return result;
+      return response.json();
     },
-    onSuccess: (data) => {
-      console.log("Login successful:", data);
+    onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["/api/auth/user"] });
       toast({ title: "Welcome back!", description: "You have been logged in successfully." });
       setLocation("/");
     },
     onError: (error) => {
-      console.error("Login error:", error);
       toast({
         title: "Login failed",
         description: error.message,
@@ -66,8 +61,6 @@ export default function Login() {
   });
 
   const onSubmit = (data: LoginFormData) => {
-    console.log("Form submitted with data:", data);
-    console.log("Mutation state before:", loginMutation.status);
     loginMutation.mutate(data);
   };
 
@@ -90,9 +83,7 @@ export default function Login() {
                 Form errors: {Object.keys(errors).map(key => `${key}: ${errors[key as keyof typeof errors]?.message}`).join(', ')}
               </div>
             )}
-            <div className="text-blue-500 text-sm">
-              Debug: Form ready, {Object.keys(errors).length} errors
-            </div>
+
             <div className="space-y-2">
               <Label htmlFor="employeeNumber">Employee Number</Label>
               <div className="relative">
@@ -149,10 +140,7 @@ export default function Login() {
               type="submit"
               className="w-full bg-[hsl(207,90%,54%)] hover:bg-[hsl(211,100%,29%)]"
               disabled={loginMutation.isPending}
-              onClick={(e) => {
-                console.log("Button clicked!");
-                // Don't prevent default - let form handle it
-              }}
+
             >
               {loginMutation.isPending ? "Signing in..." : "Sign In"}
             </Button>
