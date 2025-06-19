@@ -110,8 +110,8 @@ export default function Reports() {
                   <SelectContent>
                     <SelectItem value="all">All Statuses</SelectItem>
                     {REQUEST_STATUSES.map((status) => (
-                      <SelectItem key={status} value={status}>
-                        {status.charAt(0).toUpperCase() + status.slice(1)}
+                      <SelectItem key={status.value} value={status.value}>
+                        {status.label}
                       </SelectItem>
                     ))}
                   </SelectContent>
@@ -128,8 +128,8 @@ export default function Reports() {
                   <SelectContent>
                     <SelectItem value="all">All Departments</SelectItem>
                     {DEPARTMENTS.map((dept) => (
-                      <SelectItem key={dept} value={dept}>
-                        {dept}
+                      <SelectItem key={dept.value} value={dept.value}>
+                        {dept.label}
                       </SelectItem>
                     ))}
                   </SelectContent>
@@ -146,8 +146,8 @@ export default function Reports() {
                   <SelectContent>
                     <SelectItem value="all">All Locations</SelectItem>
                     {LOCATIONS.map((location) => (
-                      <SelectItem key={location} value={location}>
-                        {location}
+                      <SelectItem key={location.value} value={location.value}>
+                        {location.label}
                       </SelectItem>
                     ))}
                   </SelectContent>
