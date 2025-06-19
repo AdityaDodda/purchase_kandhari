@@ -40,10 +40,10 @@ export default function AdminDashboard() {
   };
 
   const handleSelectAll = () => {
-    if (selectedRequests.length === requests?.length) {
+    if (Array.isArray(requests) && selectedRequests.length === requests.length) {
       setSelectedRequests([]);
     } else {
-      setSelectedRequests(requests?.map((r: any) => r.id) || []);
+      setSelectedRequests(Array.isArray(requests) ? requests.map((r: any) => r.id) : []);
     }
   };
 
@@ -80,7 +80,7 @@ export default function AdminDashboard() {
               <div className="flex items-center justify-between">
                 <div>
                   <p className="text-sm font-medium text-gray-600">This Month</p>
-                  <p className="text-3xl font-bold text-gray-900">{stats?.totalRequests || 0}</p>
+                  <p className="text-3xl font-bold text-gray-900">{stats?.totalRequests ?? 0}</p>
                   <p className="text-xs text-green-600 flex items-center mt-1">
                     <TrendingUp className="h-3 w-3 mr-1" />
                     12% vs last month
@@ -259,7 +259,7 @@ export default function AdminDashboard() {
                   </tr>
                 </thead>
                 <tbody className="bg-white divide-y divide-gray-200">
-                  {requests?.length ? (
+                  {Array.isArray(requests) && requests.length > 0 ? (
                     requests.map((request: any) => (
                       <tr key={request.id} className="hover:bg-gray-50">
                         <td className="px-6 py-4 whitespace-nowrap">

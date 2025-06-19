@@ -136,7 +136,7 @@ export default function MyRequests() {
           </CardHeader>
           <CardContent>
             <div className="space-y-4">
-              {requests?.length ? (
+              {Array.isArray(requests) && requests.length > 0 ? (
                 requests.map((request: any) => (
                   <div key={request.id} className="border border-gray-200 rounded-lg p-4 hover:shadow-md transition-shadow">
                     <div className="flex justify-between items-start mb-3">
