@@ -519,6 +519,238 @@ export function registerRoutes(app: Express): Server {
     }
   });
 
+  // Reports API - Get purchase requests for reports with advanced filtering
+  app.get('/api/reports/purchase-requests', requireAuth, async (req: any, res) => {
+    try {
+      const filters = {
+        ...req.query,
+        includeRequester: true,
+        includeLineItems: false
+      };
+      
+      const requests = await storage.getAllPurchaseRequests(filters);
+      res.json(requests);
+    } catch (error) {
+      console.error('Error fetching reports data:', error);
+      res.status(500).json({ message: 'Failed to fetch reports data' });
+    }
+  });
+
+  // Admin Masters API - Get all users for admin masters
+  app.get('/api/admin/users', requireAuth, async (req: any, res) => {
+    try {
+      const userRole = req.session.user?.role;
+      if (userRole !== 'admin') {
+        return res.status(403).json({ message: 'Admin access required' });
+      }
+
+      const users = await storage.getAllUsers();
+      res.json(users);
+    } catch (error) {
+      console.error('Error fetching users:', error);
+      res.status(500).json({ message: 'Failed to fetch users' });
+    }
+  });
+
+  // Admin Masters API - Generic endpoint for master data
+  app.get('/api/admin/masters/:type', requireAuth, async (req: any, res) => {
+    try {
+      const userRole = req.session.user?.role;
+      if (userRole !== 'admin') {
+        return res.status(403).json({ message: 'Admin access required' });
+      }
+
+      const { type } = req.params;
+      let data = [];
+
+      switch (type) {
+        case 'users':
+          data = await storage.getAllUsers();
+          break;
+        case 'entities':
+          data = await storage.getAllEntities();
+          break;
+        case 'departments':
+          data = await storage.getAllDepartments();
+          break;
+        case 'locations':
+          data = await storage.getAllLocations();
+          break;
+        case 'roles':
+          data = await storage.getAllRoles();
+          break;
+        case 'approval-matrix':
+          data = await storage.getAllApprovalMatrix();
+          break;
+        case 'escalation-matrix':
+          data = await storage.getAllEscalationMatrix();
+          break;
+        case 'inventory':
+          data = await storage.getAllInventory();
+          break;
+        case 'vendors':
+          data = await storage.getAllVendors();
+          break;
+        default:
+          return res.status(400).json({ message: 'Invalid master type' });
+      }
+
+      res.json(data);
+    } catch (error) {
+      console.error(`Error fetching ${req.params.type} master data:`, error);
+      res.status(500).json({ message: `Failed to fetch ${req.params.type} data` });
+    }
+  });
+
+  // Admin Masters API - Create master data
+  app.post('/api/admin/masters/:type', requireAuth, async (req: any, res) => {
+    try {
+      const userRole = req.session.user?.role;
+      if (userRole !== 'admin') {
+        return res.status(403).json({ message: 'Admin access required' });
+      }
+
+      const { type } = req.params;
+      let result;
+
+      switch (type) {
+        case 'users':
+          result = await storage.createUser(req.body);
+          break;
+        case 'entities':
+          result = await storage.createEntity(req.body);
+          break;
+        case 'departments':
+          result = await storage.createDepartment(req.body);
+          break;
+        case 'locations':
+          result = await storage.createLocation(req.body);
+          break;
+        case 'roles':
+          result = await storage.createRole(req.body);
+          break;
+        case 'approval-matrix':
+          result = await storage.createApprovalMatrix(req.body);
+          break;
+        case 'escalation-matrix':
+          result = await storage.createEscalationMatrix(req.body);
+          break;
+        case 'inventory':
+          result = await storage.createInventory(req.body);
+          break;
+        case 'vendors':
+          result = await storage.createVendor(req.body);
+          break;
+        default:
+          return res.status(400).json({ message: 'Invalid master type' });
+      }
+
+      res.status(201).json(result);
+    } catch (error) {
+      console.error(`Error creating ${req.params.type}:`, error);
+      res.status(500).json({ message: `Failed to create ${req.params.type}` });
+    }
+  });
+
+  // Admin Masters API - Update master data
+  app.put('/api/admin/masters/:type/:id', requireAuth, async (req: any, res) => {
+    try {
+      const userRole = req.session.user?.role;
+      if (userRole !== 'admin') {
+        return res.status(403).json({ message: 'Admin access required' });
+      }
+
+      const { type, id } = req.params;
+      let result;
+
+      switch (type) {
+        case 'users':
+          result = await storage.updateUser(parseInt(id), req.body);
+          break;
+        case 'entities':
+          result = await storage.updateEntity(parseInt(id), req.body);
+          break;
+        case 'departments':
+          result = await storage.updateDepartment(parseInt(id), req.body);
+          break;
+        case 'locations':
+          result = await storage.updateLocation(parseInt(id), req.body);
+          break;
+        case 'roles':
+          result = await storage.updateRole(parseInt(id), req.body);
+          break;
+        case 'approval-matrix':
+          result = await storage.updateApprovalMatrix(parseInt(id), req.body);
+          break;
+        case 'escalation-matrix':
+          result = await storage.updateEscalationMatrix(parseInt(id), req.body);
+          break;
+        case 'inventory':
+          result = await storage.updateInventory(parseInt(id), req.body);
+          break;
+        case 'vendors':
+          result = await storage.updateVendor(parseInt(id), req.body);
+          break;
+        default:
+          return res.status(400).json({ message: 'Invalid master type' });
+      }
+
+      res.json(result);
+    } catch (error) {
+      console.error(`Error updating ${req.params.type}:`, error);
+      res.status(500).json({ message: `Failed to update ${req.params.type}` });
+    }
+  });
+
+  // Admin Masters API - Delete master data
+  app.delete('/api/admin/masters/:type/:id', requireAuth, async (req: any, res) => {
+    try {
+      const userRole = req.session.user?.role;
+      if (userRole !== 'admin') {
+        return res.status(403).json({ message: 'Admin access required' });
+      }
+
+      const { type, id } = req.params;
+
+      switch (type) {
+        case 'users':
+          await storage.deleteUser(parseInt(id));
+          break;
+        case 'entities':
+          await storage.deleteEntity(parseInt(id));
+          break;
+        case 'departments':
+          await storage.deleteDepartment(parseInt(id));
+          break;
+        case 'locations':
+          await storage.deleteLocation(parseInt(id));
+          break;
+        case 'roles':
+          await storage.deleteRole(parseInt(id));
+          break;
+        case 'approval-matrix':
+          await storage.deleteApprovalMatrix(parseInt(id));
+          break;
+        case 'escalation-matrix':
+          await storage.deleteEscalationMatrix(parseInt(id));
+          break;
+        case 'inventory':
+          await storage.deleteInventory(parseInt(id));
+          break;
+        case 'vendors':
+          await storage.deleteVendor(parseInt(id));
+          break;
+        default:
+          return res.status(400).json({ message: 'Invalid master type' });
+      }
+
+      res.json({ message: 'Record deleted successfully' });
+    } catch (error) {
+      console.error(`Error deleting ${req.params.type}:`, error);
+      res.status(500).json({ message: `Failed to delete ${req.params.type}` });
+    }
+  });
+
   const httpServer = createServer(app);
   return httpServer;
 }

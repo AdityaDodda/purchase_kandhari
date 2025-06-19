@@ -11,6 +11,8 @@ import Dashboard from "@/pages/dashboard";
 import NewRequest from "@/pages/new-request";
 import MyRequests from "@/pages/my-requests";
 import AdminDashboard from "@/pages/admin-dashboard";
+import AdminMasters from "@/pages/admin-masters";
+import Reports from "@/pages/reports";
 import NotFound from "@/pages/not-found";
 
 function AuthWrapper({ children }: { children: React.ReactNode }) {
@@ -46,7 +48,9 @@ function Router() {
         <Route path="/" component={Dashboard} />
         <Route path="/new-request" component={NewRequest} />
         <Route path="/my-requests" component={MyRequests} />
+        <Route path="/reports" component={Reports} />
         <Route path="/admin" component={AdminDashboard} />
+        <Route path="/admin-masters" component={AdminMasters} />
         <Route component={NotFound} />
       </Switch>
     </AuthWrapper>
