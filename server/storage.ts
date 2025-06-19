@@ -6,6 +6,14 @@ import {
   approvalHistory,
   approvalWorkflow,
   notifications,
+  entities,
+  departments,
+  locations,
+  roles,
+  approvalMatrix,
+  escalationMatrix,
+  inventory,
+  vendors,
   type User,
   type InsertUser,
   type PurchaseRequest,
@@ -19,6 +27,22 @@ import {
   type ApprovalWorkflow,
   type Notification,
   type InsertNotification,
+  type Entity,
+  type InsertEntity,
+  type Department,
+  type InsertDepartment,
+  type Location,
+  type InsertLocation,
+  type Role,
+  type InsertRole,
+  type ApprovalMatrix,
+  type InsertApprovalMatrix,
+  type EscalationMatrix,
+  type InsertEscalationMatrix,
+  type Inventory,
+  type InsertInventory,
+  type Vendor,
+  type InsertVendor,
 } from "@shared/schema";
 import { db } from "./db";
 import { eq, and, desc, asc, count, sum, sql, gte, lte, like, inArray } from "drizzle-orm";
@@ -63,6 +87,58 @@ export interface IStorage {
   createNotification(notification: InsertNotification): Promise<Notification>;
   getNotificationsByUser(userId: number): Promise<Notification[]>;
   markNotificationAsRead(id: number): Promise<void>;
+
+  // Master Data operations for Admin system
+  getAllUsers(): Promise<User[]>;
+  deleteUser(id: number): Promise<void>;
+  
+  // Entity Master operations
+  getAllEntities(): Promise<Entity[]>;
+  createEntity(entity: InsertEntity): Promise<Entity>;
+  updateEntity(id: number, entity: Partial<InsertEntity>): Promise<Entity>;
+  deleteEntity(id: number): Promise<void>;
+  
+  // Department Master operations
+  getAllDepartments(): Promise<Department[]>;
+  createDepartment(department: InsertDepartment): Promise<Department>;
+  updateDepartment(id: number, department: Partial<InsertDepartment>): Promise<Department>;
+  deleteDepartment(id: number): Promise<void>;
+  
+  // Location Master operations
+  getAllLocations(): Promise<Location[]>;
+  createLocation(location: InsertLocation): Promise<Location>;
+  updateLocation(id: number, location: Partial<InsertLocation>): Promise<Location>;
+  deleteLocation(id: number): Promise<void>;
+  
+  // Role Master operations
+  getAllRoles(): Promise<Role[]>;
+  createRole(role: InsertRole): Promise<Role>;
+  updateRole(id: number, role: Partial<InsertRole>): Promise<Role>;
+  deleteRole(id: number): Promise<void>;
+  
+  // Approval Matrix operations
+  getAllApprovalMatrix(): Promise<ApprovalMatrix[]>;
+  createApprovalMatrix(matrix: InsertApprovalMatrix): Promise<ApprovalMatrix>;
+  updateApprovalMatrix(id: number, matrix: Partial<InsertApprovalMatrix>): Promise<ApprovalMatrix>;
+  deleteApprovalMatrix(id: number): Promise<void>;
+  
+  // Escalation Matrix operations
+  getAllEscalationMatrix(): Promise<EscalationMatrix[]>;
+  createEscalationMatrix(matrix: InsertEscalationMatrix): Promise<EscalationMatrix>;
+  updateEscalationMatrix(id: number, matrix: Partial<InsertEscalationMatrix>): Promise<EscalationMatrix>;
+  deleteEscalationMatrix(id: number): Promise<void>;
+  
+  // Inventory Master operations
+  getAllInventory(): Promise<Inventory[]>;
+  createInventory(item: InsertInventory): Promise<Inventory>;
+  updateInventory(id: number, item: Partial<InsertInventory>): Promise<Inventory>;
+  deleteInventory(id: number): Promise<void>;
+  
+  // Vendor Master operations
+  getAllVendors(): Promise<Vendor[]>;
+  createVendor(vendor: InsertVendor): Promise<Vendor>;
+  updateVendor(id: number, vendor: Partial<InsertVendor>): Promise<Vendor>;
+  deleteVendor(id: number): Promise<void>;
 }
 
 export class DatabaseStorage implements IStorage {
