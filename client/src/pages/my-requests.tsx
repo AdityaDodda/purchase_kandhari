@@ -13,9 +13,9 @@ import { useLocation } from "wouter";
 export default function MyRequests() {
   const [, setLocation] = useLocation();
   const [filters, setFilters] = useState({
-    status: "",
-    department: "",
-    dateRange: "",
+    status: "all",
+    department: "all",
+    dateRange: "30",
   });
 
   const { data: requests, isLoading } = useQuery({
@@ -72,7 +72,7 @@ export default function MyRequests() {
                     <SelectValue placeholder="All Status" />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="">All Status</SelectItem>
+                    <SelectItem value="all">All Status</SelectItem>
                     <SelectItem value="submitted">Submitted</SelectItem>
                     <SelectItem value="pending">Pending</SelectItem>
                     <SelectItem value="approved">Approved</SelectItem>
@@ -104,7 +104,7 @@ export default function MyRequests() {
                     <SelectValue placeholder="All Departments" />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="">All Departments</SelectItem>
+                    <SelectItem value="all">All Departments</SelectItem>
                     <SelectItem value="Production">Production</SelectItem>
                     <SelectItem value="Quality Control">Quality Control</SelectItem>
                     <SelectItem value="Sales & Marketing">Sales & Marketing</SelectItem>
