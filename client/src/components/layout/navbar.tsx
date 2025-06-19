@@ -33,13 +33,18 @@ export function Navbar() {
       await apiRequest("POST", "/api/auth/logout");
     },
     onSuccess: () => {
-      // Clear all queries and cache
+      // Clear all queries and cache completely
       queryClient.clear();
-      // Reset the user query to undefined to trigger auth check
-      queryClient.setQueryData(["/api/auth/user"], null);
+      // Force remove user data from cache
+      queryClient.removeQueries({ queryKey: ["/api/auth/user"] });
+      queryClient.removeQueries({ queryKey: ["/api/notifications"] });
+      queryClient.removeQueries({ queryKey: ["/api/dashboard/stats"] });
+      queryClient.removeQueries({ queryKey: ["/api/purchase-requests"] });
+      
       toast({ title: "Logged out", description: "You have been logged out successfully." });
-      // Redirect to root - AuthWrapper will show login page for unauthenticated users
-      setLocation("/");
+      
+      // Force a page reload to ensure clean state
+      window.location.href = "/";
     },
     onError: (error) => {
       toast({
