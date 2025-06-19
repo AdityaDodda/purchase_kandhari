@@ -98,7 +98,25 @@ The application is configured for deployment on Replit with:
 ```
 Changelog:
 - June 19, 2025. Initial setup
+- June 19, 2025. Fixed authentication system and created test users with proper password hashing
 ```
+
+## Test User Credentials
+
+For testing the system, use these login credentials:
+
+**Admin User (Full Access):**
+- Employee Number: `EMP001`
+- Password: `password`
+- Role: Admin
+
+**Approver Users:**
+- Employee Number: `EMP002` / Password: `password` (Quality Control)
+- Employee Number: `EMP004` / Password: `password` (Finance)
+
+**Regular Users:**
+- Employee Number: `EMP003` / Password: `password` (Sales & Marketing)
+- Employee Number: `EMP005` / Password: `password` (IT)
 
 ## User Preferences
 
