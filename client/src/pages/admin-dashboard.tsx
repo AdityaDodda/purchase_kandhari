@@ -12,9 +12,9 @@ import { Checkbox } from "@/components/ui/checkbox";
 
 export default function AdminDashboard() {
   const [filters, setFilters] = useState({
-    status: "",
-    department: "",
-    location: "",
+    status: "all",
+    department: "all",
+    location: "all",
     search: "",
   });
   const [selectedRequests, setSelectedRequests] = useState<number[]>([]);
@@ -156,7 +156,7 @@ export default function AdminDashboard() {
                     <SelectValue placeholder="All Status" />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="">All Status</SelectItem>
+                    <SelectItem value="all">All Status</SelectItem>
                     <SelectItem value="submitted">Submitted</SelectItem>
                     <SelectItem value="pending">Pending</SelectItem>
                     <SelectItem value="approved">Approved</SelectItem>
@@ -172,7 +172,7 @@ export default function AdminDashboard() {
                     <SelectValue placeholder="All Departments" />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="">All Departments</SelectItem>
+                    <SelectItem value="all">All Departments</SelectItem>
                     <SelectItem value="Production">Production</SelectItem>
                     <SelectItem value="Quality Control">Quality Control</SelectItem>
                     <SelectItem value="Sales & Marketing">Sales & Marketing</SelectItem>
@@ -188,7 +188,7 @@ export default function AdminDashboard() {
                     <SelectValue placeholder="All Locations" />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="">All Locations</SelectItem>
+                    <SelectItem value="all">All Locations</SelectItem>
                     <SelectItem value="Mumbai">Mumbai</SelectItem>
                     <SelectItem value="Delhi">Delhi</SelectItem>
                     <SelectItem value="Bangalore">Bangalore</SelectItem>

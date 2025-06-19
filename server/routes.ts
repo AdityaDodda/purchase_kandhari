@@ -229,6 +229,34 @@ export function registerRoutes(app: Express): Server {
         requests = await storage.getPurchaseRequestsByUser(req.session.user.id, filters);
       }
 
+      // Apply client-side filtering for "all" values
+      if (requests && Array.isArray(requests)) {
+        let filteredRequests = requests;
+
+        if (filters.status && filters.status !== 'all') {
+          filteredRequests = filteredRequests.filter(req => req.status === filters.status);
+        }
+        
+        if (filters.department && filters.department !== 'all') {
+          filteredRequests = filteredRequests.filter(req => req.department === filters.department);
+        }
+        
+        if (filters.location && filters.location !== 'all') {
+          filteredRequests = filteredRequests.filter(req => req.location && req.location.includes(filters.location));
+        }
+        
+        if (filters.search) {
+          const searchTerm = filters.search.toLowerCase();
+          filteredRequests = filteredRequests.filter(req => 
+            req.title?.toLowerCase().includes(searchTerm) ||
+            req.requisitionNumber?.toLowerCase().includes(searchTerm) ||
+            req.businessJustificationDetails?.toLowerCase().includes(searchTerm)
+          );
+        }
+
+        requests = filteredRequests;
+      }
+
       res.json(requests);
     } catch (error) {
       console.error("Get purchase requests error:", error);
