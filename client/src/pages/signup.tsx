@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { Link, useLocation } from "wouter";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
-import { useForm } from "react-hook-form";
+import { useForm, Controller } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 import { UserPlus, Eye, EyeOff } from "lucide-react";
@@ -40,6 +40,7 @@ export default function Signup() {
     handleSubmit,
     setValue,
     formState: { errors },
+    control,
   } = useForm<SignupFormData>({
     resolver: zodResolver(signupSchema),
   });
@@ -47,6 +48,7 @@ export default function Signup() {
   const signupMutation = useMutation({
     mutationFn: async (data: SignupFormData) => {
       const { agreeToTerms, ...userData } = data;
+      console.log(userData);
       const response = await apiRequest("POST", "/api/auth/signup", userData);
       return response.json();
     },
@@ -195,7 +197,19 @@ export default function Signup() {
             </div>
 
             <div className="flex items-center space-x-2">
-              <Checkbox id="agreeToTerms" {...register("agreeToTerms")} />
+              <Controller
+                name="agreeToTerms"
+                control={control}
+                defaultValue={false}
+                rules={{ required: true }}
+                render={({ field }) => (
+                  <Checkbox
+                    id="agreeToTerms"
+                    checked={field.value}
+                    onCheckedChange={field.onChange}
+                  />
+                )}
+              />
               <Label htmlFor="agreeToTerms" className="text-sm">
                 I agree to the Terms of Service and Privacy Policy
               </Label>

@@ -156,7 +156,17 @@ export function registerRoutes(app: Express): Server {
       if (!user) {
         return res.status(404).json({ message: "User not found" });
       }
-      res.json(user);
+      // Return only safe fields
+      const safeUser = {
+        id: user.id,
+        employeeNumber: user.employeeNumber,
+        fullName: user.fullName,
+        email: user.email,
+        department: user.department,
+        location: user.location,
+        role: user.role,
+      };
+      res.json(safeUser);
     } catch (error) {
       console.error("Get user error:", error);
       res.status(500).json({ message: "Internal server error" });
