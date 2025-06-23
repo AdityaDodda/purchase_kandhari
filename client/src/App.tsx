@@ -14,6 +14,8 @@ import AdminDashboard from "@/pages/admin-dashboard";
 import AdminMasters from "@/pages/admin-masters";
 import Reports from "@/pages/reports";
 import NotFound from "@/pages/not-found";
+import ForgotPasswordPage from "@/pages/forgot-password";
+import ResetPasswordPage from "@/pages/reset-password";
 
 function AuthWrapper({ children }: { children: React.ReactNode }) {
   const { data: user, isLoading } = useQuery({
@@ -33,6 +35,8 @@ function AuthWrapper({ children }: { children: React.ReactNode }) {
     return (
       <Switch>
         <Route path="/signup" component={Signup} />
+        <Route path="/forgot-password" component={ForgotPasswordPage} />
+        <Route path="/reset-password" component={ResetPasswordPage} />
         <Route component={Login} />
       </Switch>
     );

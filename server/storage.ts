@@ -54,6 +54,7 @@ export interface IStorage {
   getUserByEmail(email: string): Promise<User | undefined>;
   createUser(user: InsertUser): Promise<User>;
   updateUser(id: number, user: Partial<InsertUser>): Promise<User>;
+  updateUserPassword(id: number, password: string): Promise<void>;
   getApproversByDepartmentLocation(department: string, location: string): Promise<User[]>;
 
   // Purchase Request operations
@@ -173,6 +174,13 @@ export class DatabaseStorage implements IStorage {
       .where(eq(users.id, id))
       .returning();
     return user;
+  }
+
+  async updateUserPassword(id: number, password: string): Promise<void> {
+    await db
+      .update(users)
+      .set({ password, updatedAt: new Date() })
+      .where(eq(users.id, id));
   }
 
   async getApproversByDepartmentLocation(department: string, location: string): Promise<User[]> {

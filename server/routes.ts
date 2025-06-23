@@ -7,6 +7,7 @@ import bcrypt from "bcrypt";
 import multer from "multer";
 import path from "path";
 import fs from "fs";
+import { sendPasswordResetEmail } from "./email";
 
 // Configure multer for file uploads
 const uploadDir = "uploads";
@@ -150,13 +151,50 @@ export function registerRoutes(app: Express): Server {
     });
   });
 
+  // Forgot Password
+  app.post("/api/forgot-password", async (req, res) => {
+    try {
+      const { email } = z.object({ email: z.string().email() }).parse(req.body);
+      const user = await storage.getUserByEmail(email);
+
+      if (user) {
+        const resetLink = `http://${req.headers.host}/reset-password?email=${encodeURIComponent(email)}`;
+        await sendPasswordResetEmail(user.email, resetLink);
+      }
+      res.json({ message: "If an account with that email exists, a password reset link has been sent." });
+    } catch (error) {
+      console.error("Forgot password error:", error);
+      res.status(500).json({ message: "Internal server error" });
+    }
+  });
+
+  // Reset Password
+  app.post("/api/reset-password", async (req, res) => {
+    try {
+      const { email, password } = z.object({
+        email: z.string().email(),
+        password: z.string().min(6),
+      }).parse(req.body);
+
+      const user = await storage.getUserByEmail(email);
+      if (!user) {
+        return res.status(400).json({ message: "Invalid email or reset link." });
+      }
+      const hashedPassword = await bcrypt.hash(password, 10);
+      await storage.updateUserPassword(user.id, hashedPassword);
+      res.json({ message: "Password has been reset successfully." });
+    } catch (error) {
+      console.error("Reset password error:", error);
+      res.status(500).json({ message: "Internal server error" });
+    }
+  });
+
   app.get("/api/auth/user", requireAuth, async (req: any, res) => {
     try {
       const user = await storage.getUser(req.session.user.id);
       if (!user) {
         return res.status(404).json({ message: "User not found" });
       }
-      // Return only safe fields
       const safeUser = {
         id: user.id,
         employeeNumber: user.employeeNumber,
