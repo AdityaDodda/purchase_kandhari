@@ -23,6 +23,26 @@ export async function apiRequest(
   return res;
 }
 
+export async function apiRequest1(
+  method: string,
+  url: string,
+  data?: unknown,
+): Promise<any> {
+  const res = await fetch(url, {
+    method,
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: data ? JSON.stringify(data) : undefined,
+    credentials: "include",
+  });
+
+  await throwIfResNotOk(res);
+
+  // Return parsed JSON directly for easy usage
+  return res.json();
+}
+
 type UnauthorizedBehavior = "returnNull" | "throw";
 export const getQueryFn: <T>(options: {
   on401: UnauthorizedBehavior;

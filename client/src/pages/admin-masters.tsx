@@ -14,7 +14,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/u
 import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useToast } from "@/hooks/use-toast";
-import { apiRequest } from "@/lib/queryClient";
+import { apiRequest1 } from "@/lib/queryClient";
 
 type MasterType = 'users' | 'entities' | 'departments' | 'locations' | 'roles' | 'approval-matrix' | 'escalation-matrix' | 'inventory' | 'vendors';
 
@@ -29,7 +29,10 @@ export default function AdminMasters() {
 
   // Generic queries for all master data
   const { data: masterData, isLoading } = useQuery({
-    queryKey: ['/api/admin/masters', activeTab],
+    queryKey: ['/api/admin/masters/users', activeTab],
+    queryFn: async () => {
+      return await apiRequest1('GET', `/api/admin/masters/${activeTab}`);
+    },
   });
 
   const filteredData = Array.isArray(masterData) 

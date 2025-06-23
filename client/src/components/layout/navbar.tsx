@@ -1,7 +1,9 @@
 import { useState } from "react";
 import { useLocation } from "wouter";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
-import { Building, Bell, User, ChevronDown, LogOut, Home, FileText, List, ClipboardCheck, BarChart3, Database } from "lucide-react";
+import {
+  Building, Bell, User, ChevronDown, LogOut, Home, FileText, List, ClipboardCheck, BarChart3, Database
+} from "lucide-react";
 
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -20,30 +22,21 @@ export function Navbar() {
   const { toast } = useToast();
   const queryClient = useQueryClient();
 
-  const { data: user } = useQuery({
-    queryKey: ["/api/auth/user"],
-  });
-
-  const { data: notifications } = useQuery({
-    queryKey: ["/api/notifications"],
-  });
+  const { data: user } = useQuery({ queryKey: ["/api/auth/user"] });
+  const { data: notifications } = useQuery({ queryKey: ["/api/notifications"] });
 
   const logoutMutation = useMutation({
     mutationFn: async () => {
       await apiRequest("POST", "/api/auth/logout");
     },
     onSuccess: () => {
-      // Clear all queries and cache completely
       queryClient.clear();
-      // Force remove user data from cache
       queryClient.removeQueries({ queryKey: ["/api/auth/user"] });
       queryClient.removeQueries({ queryKey: ["/api/notifications"] });
       queryClient.removeQueries({ queryKey: ["/api/dashboard/stats"] });
       queryClient.removeQueries({ queryKey: ["/api/purchase-requests"] });
-      
+
       toast({ title: "Logged out", description: "You have been logged out successfully." });
-      
-      // Force a page reload to ensure clean state
       window.location.href = "/";
     },
     onError: (error) => {
@@ -55,128 +48,132 @@ export function Navbar() {
     },
   });
 
-  const unreadNotifications = Array.isArray(notifications) ? notifications.filter((n: any) => !n.isRead) : [];
+  const unreadNotifications = Array.isArray(notifications)
+    ? notifications.filter((n: any) => !n.isRead)
+    : [];
 
-  const handleNavigation = (path: string) => {
-    setLocation(path);
-  };
-
-  const handleLogout = () => {
-    logoutMutation.mutate();
-  };
+  const handleNavigation = (path: string) => setLocation(path);
+  const handleLogout = () => logoutMutation.mutate();
 
   return (
-    <nav className="bg-[hsl(207,90%,54%)] shadow-lg fixed w-full top-0 z-50">
+    <nav className="bg-[hsl(207,90%,54%)] shadow-md fixed w-full top-0 z-50">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex justify-between items-center h-16">
-          <div className="flex items-center">
-            <div className="flex-shrink-0 flex items-center">
-              <Building className="h-8 w-8 text-white mr-3" />
-              <span className="text-white font-bold text-xl">Kandhari Global Beverages</span>
+          {/* Brand Section */}
+          <div className="flex items-center space-x-3">
+            <div className="flex items-center">
+              <img 
+                src="/assets/cola.png" 
+                alt="Coca-Cola Logo" 
+                className="h-10 w-auto max-w-[100px] object-contain"
+                onError={(e) => {
+                  console.error('Logo failed to load from /assets/cola.png');
+                  // Fallback to a text placeholder
+                  const parent = e.currentTarget.parentElement;
+                  if (parent) {
+                    parent.innerHTML = '<span class="text-white font-bold text-sm bg-red-600 px-2 py-1 rounded">LOGO</span>';
+                  }
+                }}
+                onLoad={() => console.log('Logo loaded successfully')}
+              />
             </div>
-            <div className="hidden md:ml-6 md:flex md:space-x-4">
-              <Button
-                variant="ghost"
-                className="text-white hover:text-[hsl(32,100%,50%)] hover:bg-transparent px-2 py-2 text-sm font-medium"
-                onClick={() => handleNavigation("/")}
-              >
-                <Home className="h-4 w-4 mr-1" />
-                Dashboard
-              </Button>
-              <Button
-                variant="ghost"
-                className="text-white hover:text-[hsl(32,100%,50%)] hover:bg-transparent px-2 py-2 text-sm font-medium"
-                onClick={() => handleNavigation("/new-request")}
-              >
-                <FileText className="h-4 w-4 mr-1" />
-                New
-              </Button>
-              <Button
-                variant="ghost"
-                className="text-white hover:text-[hsl(32,100%,50%)] hover:bg-transparent px-2 py-2 text-sm font-medium"
-                onClick={() => handleNavigation("/my-requests")}
-              >
-                <List className="h-4 w-4 mr-1" />
-                Requests
-              </Button>
-              <Button
-                variant="ghost"
-                className="text-white hover:text-[hsl(32,100%,50%)] hover:bg-transparent px-2 py-2 text-sm font-medium"
-                onClick={() => handleNavigation("/reports")}
-              >
-                <BarChart3 className="h-4 w-4 mr-1" />
-                Reports
-              </Button>
-              {user && user.role === "admin" && (
-                <>
-                  <Button
-                    variant="ghost"
-                    className="text-white hover:text-[hsl(32,100%,50%)] hover:bg-transparent px-2 py-2 text-sm font-medium"
-                    onClick={() => handleNavigation("/admin")}
-                  >
-                    <ClipboardCheck className="h-4 w-4 mr-1" />
-                    Admin
-                  </Button>
-                  <Button
-                    variant="ghost"
-                    className="text-white hover:text-[hsl(32,100%,50%)] hover:bg-transparent px-2 py-2 text-sm font-medium"
-                    onClick={() => handleNavigation("/admin-masters")}
-                  >
-                    <Database className="h-4 w-4 mr-1" />
-                    Masters
-                  </Button>
-                </>
-              )}
-            </div>
+            <span className="text-white font-extrabold text-xl tracking-wide hover:text-[hsl(32,100%,50%)] transition-colors ml-3">
+              KGBPL
+            </span>
           </div>
 
-          <div className="flex items-center space-x-4">
+          {/* Navigation Section */}
+          <div className="flex items-center justify-center space-x-1 md:space-x-4">
+            <NavButton icon={<Home className="h-5 w-5 text-white mr-2" />} label="Dashboard" onClick={() => handleNavigation("/")} />
+            <NavButton icon={<FileText className="h-5 w-5 text-white mr-2" />} label="New" onClick={() => handleNavigation("/new-request")} />
+            <NavButton icon={<List className="h-5 w-5 text-white mr-2" />} label="Requests" onClick={() => handleNavigation("/my-requests")} />
+            <NavButton icon={<BarChart3 className="h-5 w-5 text-white mr-2" />} label="Reports" onClick={() => handleNavigation("/reports")} />
+            {user?.role === "admin" && (
+              <>
+                <NavButton icon={<ClipboardCheck className="h-5 w-5 text-white mr-2" />} label="Admin" onClick={() => handleNavigation("/admin")} />
+                <NavButton icon={<Database className="h-5 w-5 text-white mr-2" />} label="Masters" onClick={() => handleNavigation("/admin-masters")} />
+              </>
+            )}
+          </div>
+
+          {/* Right Section */}
+          <div className="flex items-center space-x-6">
             {/* Notifications */}
             <div className="relative">
-              <Button variant="ghost" className="text-white hover:text-[hsl(32,100%,50%)] hover:bg-transparent p-2">
+              <Button 
+                variant="ghost" 
+                className="text-white hover:text-[hsl(32,100%,50%)] hover:bg-white/10 p-2 relative rounded-full"
+                onClick={() => handleNavigation("/notifications")}
+              >
                 <Bell className="h-5 w-5" />
                 {unreadNotifications.length > 0 && (
-                  <Badge className="absolute -top-1 -right-1 bg-red-500 text-white text-xs h-5 w-5 rounded-full flex items-center justify-center p-0">
-                    {unreadNotifications.length}
+                  <Badge 
+                    className="absolute -top-2 -right-2 h-5 w-5 p-0 flex items-center justify-center bg-red-500 text-white text-xs border-2 border-white"
+                    variant="destructive"
+                  >
+                    {unreadNotifications.length > 9 ? '9+' : unreadNotifications.length}
                   </Badge>
                 )}
               </Button>
             </div>
 
-            {/* User Menu */}
-            <DropdownMenu>
-              <DropdownMenuTrigger asChild>
-                <Button variant="ghost" className="flex items-center space-x-2 text-white hover:text-[hsl(32,100%,50%)] hover:bg-transparent">
-                  <div className="w-8 h-8 bg-[hsl(32,100%,50%)] rounded-full flex items-center justify-center">
-                    <span className="text-white font-semibold text-sm">
-                      {user?.fullName ? user.fullName.split(' ').map((n: string) => n[0]).join('').toUpperCase() : 'U'}
-                    </span>
+            {/* User Dropdown */}
+            <div className="relative">
+              <DropdownMenu>
+                <DropdownMenuTrigger asChild>
+                  <Button 
+                    variant="ghost" 
+                    className="flex items-center space-x-2 text-white hover:text-[hsl(32,100%,50%)] hover:bg-white/10 transition-colors duration-200 whitespace-nowrap"
+                  >
+                    <div className="w-8 h-8 bg-[hsl(32,100%,50%)] rounded-full flex items-center justify-center flex-shrink-0">
+                      <span className="text-white font-semibold text-sm">
+                        {user?.fullName ? user.fullName.split(' ').map((n: string) => n[0]).join('').toUpperCase() : 'U'}
+                      </span>
+                    </div>
+                    <span className="hidden md:inline truncate max-w-[120px]">{user?.fullName ?? 'User'}</span>
+                    <ChevronDown className="h-4 w-4 text-white flex-shrink-0" />
+                  </Button>
+                </DropdownMenuTrigger>
+                <DropdownMenuContent 
+                  align="end" 
+                  className="w-56 mt-2"
+                  sideOffset={5}
+                  alignOffset={-5}
+                >
+                  <div className="px-2 py-1.5 text-sm">
+                    <div className="font-medium truncate">{user?.fullName ?? 'User'}</div>
+                    <div className="text-gray-500 truncate">{user?.email ?? 'No email'}</div>
+                    <div className="text-gray-500 text-xs">{user?.employeeNumber ?? 'N/A'}</div>
                   </div>
-                  <span className="hidden md:inline">{user?.fullName ?? 'User'}</span>
-                  <ChevronDown className="h-4 w-4" />
-                </Button>
-              </DropdownMenuTrigger>
-              <DropdownMenuContent align="end" className="w-56">
-                <div className="px-2 py-1.5 text-sm">
-                  <div className="font-medium">{user?.fullName ?? 'User'}</div>
-                  <div className="text-gray-500">{user?.email ?? 'No email'}</div>
-                  <div className="text-gray-500 text-xs">{user?.employeeNumber ?? 'N/A'}</div>
-                </div>
-                <DropdownMenuSeparator />
-                <DropdownMenuItem>
-                  <User className="mr-2 h-4 w-4" />
-                  Profile
-                </DropdownMenuItem>
-                <DropdownMenuSeparator />
-                <DropdownMenuItem onClick={handleLogout} disabled={logoutMutation.isPending}>
-                  <LogOut className="mr-2 h-4 w-4" />
-                  {logoutMutation.isPending ? "Logging out..." : "Logout"}
-                </DropdownMenuItem>
-              </DropdownMenuContent>
-            </DropdownMenu>
+                  <DropdownMenuSeparator />
+                  <DropdownMenuItem>
+                    <User className="mr-2 h-4 w-4" />
+                    Profile
+                  </DropdownMenuItem>
+                  <DropdownMenuSeparator />
+                  <DropdownMenuItem onClick={handleLogout} disabled={logoutMutation.isPending}>
+                    <LogOut className="mr-2 h-4 w-4" />
+                    {logoutMutation.isPending ? "Logging out..." : "Logout"}
+                  </DropdownMenuItem>
+                </DropdownMenuContent>
+              </DropdownMenu>
+            </div>
           </div>
         </div>
       </div>
     </nav>
+  );
+}
+
+function NavButton({ icon, label, onClick }: { icon: JSX.Element; label: string; onClick: () => void }) {
+  return (
+    <Button
+      variant="ghost"
+      className="text-white hover:text-[hsl(32,100%,50%)] hover:bg-transparent px-2 py-2 text-sm font-medium flex items-center"
+      onClick={onClick}
+    >
+      {icon}
+      {label}
+    </Button>
   );
 }

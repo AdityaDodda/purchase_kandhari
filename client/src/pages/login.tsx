@@ -131,29 +131,33 @@ export default function Login() {
                   Remember me
                 </Label>
               </div>
-              <Link href="/forgot-password">
-                <Button variant="link" className="text-sm px-0 text-[hsl(207,90%,54%)]">
-                  Forgot password?
-                </Button>
-              </Link>
+              {/* Changed from Link + Button to a simple anchor tag */}
+              <a 
+                href="/forgot-password" 
+                className="text-sm text-[hsl(207,90%,54%)] hover:underline"
+                tabIndex={-1}
+              >
+                Forgot password?
+              </a>
             </div>
 
             <Button
               type="submit"
               className="w-full bg-[hsl(207,90%,54%)] hover:bg-[hsl(211,100%,29%)]"
               disabled={loginMutation.isPending}
-
             >
               {loginMutation.isPending ? "Signing in..." : "Sign In"}
             </Button>
 
             <div className="text-center">
               <span className="text-gray-600 text-sm">Don't have an account? </span>
-              <Link href="/signup">
-                <Button variant="link" className="text-sm px-0 text-[hsl(207,90%,54%)]">
-                  Sign up
-                </Button>
-              </Link>
+              {/* Also changed this to a simple anchor for consistency */}
+              <a 
+                href="/signup" 
+                className="text-sm text-[hsl(207,90%,54%)] hover:underline"
+              >
+                Sign up
+              </a>
             </div>
           </form>
         </CardContent>
