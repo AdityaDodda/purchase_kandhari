@@ -101,7 +101,36 @@ const downloadCSV = (csv: string, filename: string) => {
   downloadCSV(csv, "purchase-request-report.csv");
 };
 
- const filteredRequests = Array.isArray(requests) ? requests : [];
+const filteredRequests = Array.isArray(requests)
+  ? requests.filter((req: any) => {
+      if (filters.status !== "all" && req.status !== filters.status) return false;
+      if (filters.department !== "all" && req.department !== filters.department) return false;
+      if (filters.location !== "all" && req.location !== filters.location) return false;
+      if (filters.requester !== "all" && req.requester?.id?.toString() !== filters.requester) return false;
+      if (filters.search) {
+        const search = filters.search.toLowerCase();
+        const matches =
+          req.title?.toLowerCase().includes(search) ||
+          req.requisitionNumber?.toLowerCase().includes(search) ||
+          req.requester?.fullName?.toLowerCase().includes(search);
+        if (!matches) return false;
+      }
+      // Date range filter
+      if (filters.startDate) {
+        const reqDate = new Date(req.requestDate);
+        const start = new Date(filters.startDate);
+        if (reqDate < start) return false;
+      }
+      if (filters.endDate) {
+        const reqDate = new Date(req.requestDate);
+        const end = new Date(filters.endDate);
+        // Add 1 day to endDate to make it inclusive
+        end.setDate(end.getDate() + 1);
+        if (reqDate >= end) return false;
+      }
+      return true;
+    })
+  : [];
 
   return (
     <div className="min-h-screen bg-gray-50">
@@ -256,6 +285,7 @@ const downloadCSV = (csv: string, filename: string) => {
                 </span>
               </div>
               <div className="flex items-center space-x-4 text-sm text-gray-500">
+              <span>Submitted: {filteredRequests.filter((r: any) => r.status === 'submitted').length}</span>
                 <span>Pending: {filteredRequests.filter((r: any) => r.status === 'pending').length}</span>
                 <span>Approved: {filteredRequests.filter((r: any) => r.status === 'approved').length}</span>
                 <span>Rejected: {filteredRequests.filter((r: any) => r.status === 'rejected').length}</span>

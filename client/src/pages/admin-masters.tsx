@@ -4,6 +4,7 @@ import {
   Users, Building, MapPin, Shield, Settings, Package, Truck, 
   Plus, Edit, Trash2, Save, X, Search, Download 
 } from "lucide-react";
+import { useForm } from 'react-hook-form';
 
 import { Navbar } from "@/components/layout/navbar";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -45,7 +46,7 @@ export default function AdminMasters() {
 
   const deleteMutation = useMutation({
     mutationFn: async ({ type, id }: { type: MasterType; id: number }) => {
-      await apiRequest('DELETE', `/api/admin/masters/${type}/${id}`);
+      await apiRequest1('DELETE', `/api/admin/masters/${type}/${id}`);
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['/api/admin/masters', activeTab] });
@@ -232,20 +233,20 @@ export default function AdminMasters() {
         </Tabs>
 
         {/* Add/Edit Dialog */}
-        <Dialog open={showAddDialog} onOpenChange={setShowAddDialog}>
-          <DialogContent className="max-w-2xl">
-            <DialogHeader>
-              <DialogTitle>
-                {editingItem ? 'Edit' : 'Add'} {masterTabs.find(t => t.id === activeTab)?.label}
-              </DialogTitle>
-            </DialogHeader>
-            <MasterForm 
-              type={activeTab}
-              editingItem={editingItem}
-              onClose={() => setShowAddDialog(false)}
-            />
-          </DialogContent>
-        </Dialog>
+        {showAddDialog && (
+          <Dialog open={showAddDialog} onOpenChange={setShowAddDialog}>
+            <DialogContent className="max-w-2xl w-full max-h-[90vh] overflow-y-auto">
+              <DialogHeader>
+                <DialogTitle>{editingItem ? `Edit ${activeTab.replace(/-/g, ' ')}` : `Add New ${activeTab.replace(/-/g, ' ')}`}</DialogTitle>
+              </DialogHeader>
+              <MasterForm
+                type={activeTab}
+                editingItem={editingItem}
+                onClose={() => setShowAddDialog(false)}
+              />
+            </DialogContent>
+          </Dialog>
+        )}
       </div>
     </div>
   );
@@ -561,7 +562,7 @@ function MasterTable({
               <Plus className="h-4 w-4 mr-2" />
               Add New
             </Button>
-            <Button variant="outline">
+            <Button variant="outline" onClick={() => exportToCSV(data, `${title.replace(/\s+/g, '_').toLowerCase()}_export.csv`)}>
               <Download className="h-4 w-4 mr-2" />
               Export
             </Button>
@@ -637,23 +638,173 @@ function MasterTable({
 
 // Form Component for Add/Edit
 function MasterForm({ type, editingItem, onClose }: any) {
-  // This will be a comprehensive form component for each master type
-  // Implementation depends on the specific fields for each master
+  const { register, handleSubmit, reset } = useForm({
+    defaultValues: editingItem || {},
+  });
+  const queryClient = useQueryClient();
+  const isEdit = Boolean(editingItem);
+
+  // Define fields for each master type
+  const fieldMap: Record<string, { key: string; label: string; type?: string }[]> = {
+    users: [
+      { key: 'fullName', label: 'Full Name' },
+      { key: 'employeeNumber', label: 'Employee Number' },
+      { key: 'email', label: 'Email', type: 'email' },
+      { key: 'department', label: 'Department' },
+      { key: 'location', label: 'Location' },
+      { key: 'role', label: 'Role' },
+    ],
+    entities: [
+      { key: 'code', label: 'Entity Code' },
+      { key: 'name', label: 'Entity Name' },
+      { key: 'description', label: 'Description' },
+      { key: 'parentEntityId', label: 'Parent Entity ID', type: 'number' },
+      { key: 'isActive', label: 'Active', type: 'checkbox' },
+    ],
+    departments: [
+      { key: 'code', label: 'Department Code' },
+      { key: 'name', label: 'Department Name' },
+      { key: 'description', label: 'Description' },
+      { key: 'headOfDepartment', label: 'Head of Department' },
+      { key: 'costCenter', label: 'Cost Center' },
+      { key: 'entityId', label: 'Entity ID', type: 'number' },
+      { key: 'isActive', label: 'Active', type: 'checkbox' },
+    ],
+    locations: [
+      { key: 'code', label: 'Location Code' },
+      { key: 'name', label: 'Location Name' },
+      { key: 'address', label: 'Address' },
+      { key: 'city', label: 'City' },
+      { key: 'state', label: 'State' },
+      { key: 'country', label: 'Country' },
+      { key: 'postalCode', label: 'Postal Code' },
+      { key: 'entityId', label: 'Entity ID', type: 'number' },
+      { key: 'isActive', label: 'Active', type: 'checkbox' },
+    ],
+    roles: [
+      { key: 'code', label: 'Role Code' },
+      { key: 'name', label: 'Role Name' },
+      { key: 'description', label: 'Description' },
+      { key: 'level', label: 'Level', type: 'number' },
+      { key: 'permissions', label: 'Permissions (comma separated)' },
+      { key: 'isActive', label: 'Active', type: 'checkbox' },
+    ],
+    'approval-matrix': [
+      { key: 'department', label: 'Department' },
+      { key: 'location', label: 'Location' },
+      { key: 'level', label: 'Approval Level', type: 'number' },
+      { key: 'role', label: 'Role' },
+      { key: 'minAmount', label: 'Min Amount', type: 'number' },
+      { key: 'maxAmount', label: 'Max Amount', type: 'number' },
+      { key: 'isActive', label: 'Active', type: 'checkbox' },
+    ],
+    'escalation-matrix': [
+      { key: 'site', label: 'Site' },
+      { key: 'location', label: 'Location' },
+      { key: 'escalationDays', label: 'Escalation Days', type: 'number' },
+      { key: 'escalationLevel', label: 'Escalation Level', type: 'number' },
+      { key: 'approverName', label: 'Approver Name' },
+      { key: 'approverEmail', label: 'Approver Email', type: 'email' },
+      { key: 'isActive', label: 'Active', type: 'checkbox' },
+    ],
+    inventory: [
+      { key: 'itemCode', label: 'Item Code' },
+      { key: 'type', label: 'Type' },
+      { key: 'name', label: 'Item Name' },
+      { key: 'description', label: 'Description' },
+      { key: 'quantity', label: 'Available Qty', type: 'number' },
+      { key: 'unitOfMeasure', label: 'UOM' },
+      { key: 'location', label: 'Storage Location' },
+      { key: 'minStockLevel', label: 'Min Stock Level', type: 'number' },
+      { key: 'maxStockLevel', label: 'Max Stock Level', type: 'number' },
+      { key: 'unitCost', label: 'Unit Cost', type: 'number' },
+      { key: 'isActive', label: 'Active', type: 'checkbox' },
+    ],
+    vendors: [
+      { key: 'vendorCode', label: 'Vendor Code' },
+      { key: 'name', label: 'Vendor Name' },
+      { key: 'contactPerson', label: 'Contact Person' },
+      { key: 'email', label: 'Email', type: 'email' },
+      { key: 'phone', label: 'Phone' },
+      { key: 'address', label: 'Address' },
+      { key: 'city', label: 'City' },
+      { key: 'state', label: 'State' },
+      { key: 'country', label: 'Country' },
+      { key: 'postalCode', label: 'Postal Code' },
+      { key: 'category', label: 'Category' },
+      { key: 'paymentTerms', label: 'Payment Terms' },
+      { key: 'taxId', label: 'Tax ID' },
+      { key: 'bankDetails', label: 'Bank Details' },
+      { key: 'isActive', label: 'Active', type: 'checkbox' },
+    ],
+  };
+
+  const fields = fieldMap[type] || [];
+
+  const mutation = useMutation({
+    mutationFn: async (data: any) => {
+      if (isEdit) {
+        return await apiRequest1('PUT', `/api/admin/masters/${type}/${editingItem.id}`, data);
+      } else {
+        return await apiRequest1('POST', `/api/admin/masters/${type}`, data);
+      }
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['/api/admin/masters', type] });
+      onClose();
+    },
+  });
+
+  const onSubmit = (data: any) => {
+    mutation.mutate(data);
+  };
+
   return (
-    <div className="space-y-4">
-      <p className="text-sm text-gray-600">
-        Form for {type} master - Implementation needed based on specific fields
-      </p>
+    <form className="space-y-4" onSubmit={handleSubmit(onSubmit)}>
+      {fields.map((field) => (
+        <div key={field.key}>
+          <label className="block text-sm font-medium text-gray-700 mb-1">{field.label}</label>
+          <Input
+            type={field.type || 'text'}
+            {...register(field.key)}
+            defaultValue={editingItem ? editingItem[field.key] : ''}
+            className="w-full"
+          />
+        </div>
+      ))}
       <div className="flex justify-end space-x-2">
-        <Button variant="outline" onClick={onClose}>
+        <Button variant="outline" type="button" onClick={onClose} disabled={mutation.isPending}>
           <X className="h-4 w-4 mr-2" />
           Cancel
         </Button>
-        <Button>
+        <Button type="submit" disabled={mutation.isPending}>
           <Save className="h-4 w-4 mr-2" />
-          Save
+          {isEdit ? 'Update' : 'Save'}
         </Button>
       </div>
-    </div>
+    </form>
   );
+}
+
+// Add this utility function at the top (after imports):
+function exportToCSV(data: any[], filename: string) {
+  if (!data.length) return;
+  const headers = Object.keys(data[0]);
+  const csvRows = data.map(row =>
+    headers.map(field => {
+      let value = row[field];
+      if (typeof value === 'string') value = value.replace(/"/g, '""');
+      return `"${value ?? ''}"`;
+    }).join(',')
+  );
+  const csv = [headers.join(','), ...csvRows].join('\r\n');
+  const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+  const url = URL.createObjectURL(blob);
+  const link = document.createElement('a');
+  link.setAttribute('href', url);
+  link.setAttribute('download', filename);
+  document.body.appendChild(link);
+  link.click();
+  document.body.removeChild(link);
+  URL.revokeObjectURL(url);
 }
