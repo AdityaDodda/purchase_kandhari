@@ -202,9 +202,20 @@ export default function Dashboard() {
                             >
                               View
                             </Button>
-                            <Button variant="ghost" size="sm">
-                              Edit
-                            </Button>
+                            {request.status === 'returned' && (
+                              <Button 
+                                variant="ghost" 
+                                size="sm" 
+                                className="text-orange-600"
+                              >
+                                Resubmit
+                              </Button>
+                            )}
+                            {(request.status === 'submitted' || request.status === 'returned') && (
+                              <Button variant="ghost" size="sm">
+                                Edit
+                              </Button>
+                            )}
                           </div>
                         </td>
                       </tr>

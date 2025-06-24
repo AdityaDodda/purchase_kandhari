@@ -521,6 +521,48 @@ export function registerRoutes(app: Express): Server {
     }
   });
 
+  // Return request route
+  app.post("/api/purchase-requests/:id/return", requireAuth, requireRole(['approver', 'admin']), async (req: any, res) => {
+    try {
+      const id = parseInt(req.params.id);
+      const { comments } = req.body;
+      
+      const request = await storage.getPurchaseRequest(id);
+      if (!request) {
+        return res.status(404).json({ message: "Purchase request not found" });
+      }
+
+      // Create approval history
+      await storage.createApprovalHistory({
+        purchaseRequestId: id,
+        approverId: req.session.user.id,
+        action: 'return',
+        comments,
+        approvalLevel: request.currentApprovalLevel,
+      });
+
+      // Update request status - return to submitted so user can edit and resubmit
+      await storage.updatePurchaseRequest(id, {
+        status: 'returned',
+        currentApprovalLevel: 1, // Reset to first level
+      });
+
+      // Create notification
+      await storage.createNotification({
+        userId: request.requesterId,
+        purchaseRequestId: id,
+        title: "Purchase Request Returned",
+        message: `Your purchase request ${request.requisitionNumber} has been returned for revision. Please review the comments and resubmit.`,
+        type: "warning",
+      });
+
+      res.json({ message: "Request returned successfully" });
+    } catch (error) {
+      console.error("Return request error:", error);
+      res.status(500).json({ message: "Internal server error" });
+    }
+  });
+
   // Statistics routes
   app.get("/api/dashboard/stats", requireAuth, async (req: any, res) => {
     try {

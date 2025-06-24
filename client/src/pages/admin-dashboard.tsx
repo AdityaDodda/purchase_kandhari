@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { useQuery } from "@tanstack/react-query";
+import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { Search, Download, Filter, TrendingUp, Clock, DollarSign, BarChart3, Package, Calendar, MapPin, Database } from "lucide-react";
 
 import { Navbar } from "@/components/layout/navbar";
@@ -15,9 +15,13 @@ import { Separator } from "@/components/ui/separator";
 import { useLocation } from "wouter";
 import { LineItemsGrid } from "@/components/ui/line-items-grid";
 import { CommentsAuditLog } from "@/components/ui/comments-audit-log";
+import { useToast } from "@/hooks/use-toast";
+import { apiRequest } from "@/lib/queryClient";
 
 export default function AdminDashboard() {
   const [, setLocation] = useLocation();
+  const { toast } = useToast();
+  const queryClient = useQueryClient();
   const [filters, setFilters] = useState({
     status: "all",
     department: "all",
@@ -63,6 +67,65 @@ export default function AdminDashboard() {
       setSelectedRequests([]);
     } else {
       setSelectedRequests(Array.isArray(requests) ? requests.map((r: any) => r.id) : []);
+    }
+  };
+
+  // Action mutations
+  const approveMutation = useMutation({
+    mutationFn: async ({ id, comments }: { id: number; comments?: string }) => {
+      return apiRequest("POST", `/api/purchase-requests/${id}/approve`, { comments });
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["/api/purchase-requests"] });
+      toast({ title: "Success", description: "Request approved successfully." });
+    },
+    onError: (error: any) => {
+      toast({ title: "Error", description: error.message, variant: "destructive" });
+    },
+  });
+
+  const rejectMutation = useMutation({
+    mutationFn: async ({ id, comments }: { id: number; comments?: string }) => {
+      return apiRequest("POST", `/api/purchase-requests/${id}/reject`, { comments });
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["/api/purchase-requests"] });
+      toast({ title: "Success", description: "Request rejected successfully." });
+    },
+    onError: (error: any) => {
+      toast({ title: "Error", description: error.message, variant: "destructive" });
+    },
+  });
+
+  const returnMutation = useMutation({
+    mutationFn: async ({ id, comments }: { id: number; comments?: string }) => {
+      return apiRequest("POST", `/api/purchase-requests/${id}/return`, { comments });
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["/api/purchase-requests"] });
+      toast({ title: "Success", description: "Request returned successfully for revision." });
+    },
+    onError: (error: any) => {
+      toast({ title: "Error", description: error.message, variant: "destructive" });
+    },
+  });
+
+  const handleApproveRequest = (id: number) => {
+    const comments = prompt("Enter approval comments (optional):");
+    approveMutation.mutate({ id, comments: comments || undefined });
+  };
+
+  const handleRejectRequest = (id: number) => {
+    const comments = prompt("Enter rejection reason:");
+    if (comments) {
+      rejectMutation.mutate({ id, comments });
+    }
+  };
+
+  const handleReturnRequest = (id: number) => {
+    const comments = prompt("Enter return comments (required for user to understand what needs to be changed):");
+    if (comments) {
+      returnMutation.mutate({ id, comments });
     }
   };
 
@@ -217,6 +280,7 @@ export default function AdminDashboard() {
                     <SelectItem value="pending">Pending</SelectItem>
                     <SelectItem value="approved">Approved</SelectItem>
                     <SelectItem value="rejected">Rejected</SelectItem>
+                    <SelectItem value="returned">Returned</SelectItem>
                   </SelectContent>
                 </Select>
               </div>
@@ -370,10 +434,31 @@ export default function AdminDashboard() {
                             >
                               View
                             </Button>
-                            <Button variant="ghost" size="sm" className="text-green-600">
+                            <Button 
+                              variant="ghost" 
+                              size="sm" 
+                              className="text-green-600"
+                              onClick={() => handleApproveRequest(request.id)}
+                              disabled={request.status === 'approved' || request.status === 'rejected'}
+                            >
                               Approve
                             </Button>
-                            <Button variant="ghost" size="sm" className="text-red-600">
+                            <Button 
+                              variant="ghost" 
+                              size="sm" 
+                              className="text-yellow-600"
+                              onClick={() => handleReturnRequest(request.id)}
+                              disabled={request.status === 'approved' || request.status === 'rejected'}
+                            >
+                              Return
+                            </Button>
+                            <Button 
+                              variant="ghost" 
+                              size="sm" 
+                              className="text-red-600"
+                              onClick={() => handleRejectRequest(request.id)}
+                              disabled={request.status === 'approved' || request.status === 'rejected'}
+                            >
                               Reject
                             </Button>
                           </div>
@@ -399,6 +484,9 @@ export default function AdminDashboard() {
                     <span className="text-sm text-gray-700">{selectedRequests.length} items selected</span>
                     <Button variant="ghost" size="sm" className="text-green-600">
                       Bulk Approve
+                    </Button>
+                    <Button variant="ghost" size="sm" className="text-yellow-600">
+                      Bulk Return
                     </Button>
                     <Button variant="ghost" size="sm" className="text-red-600">
                       Bulk Reject
