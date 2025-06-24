@@ -1,19 +1,10 @@
 import { useState } from "react";
 import { useLocation } from "wouter";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
-import {
-  Building, Bell, User, ChevronDown, LogOut, Home, FileText, List, ClipboardCheck, BarChart3, Database
-} from "lucide-react";
-
+import {Bell, User, ChevronDown, LogOut, Home, FileText, ClipboardCheck, BarChart3, Database} from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuSeparator,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
+import {DropdownMenu,DropdownMenuContent,DropdownMenuItem,DropdownMenuSeparator,DropdownMenuTrigger,} from "@/components/ui/dropdown-menu";
 import { useToast } from "@/hooks/use-toast";
 import { apiRequest } from "@/lib/queryClient";
 
@@ -85,8 +76,8 @@ export function Navbar() {
           {/* Navigation Section */}
           <div className="flex items-center justify-center space-x-1 md:space-x-4">
             <NavButton icon={<Home className="h-5 w-5 text-white mr-2" />} label="Dashboard" onClick={() => handleNavigation("/")} />
-            <NavButton icon={<FileText className="h-5 w-5 text-white mr-2" />} label="New" onClick={() => handleNavigation("/new-request")} />
-            <NavButton icon={<List className="h-5 w-5 text-white mr-2" />} label="Requests" onClick={() => handleNavigation("/my-requests")} />
+            <NavButton icon={<FileText className="h-5 w-5 text-white mr-2" />} label="New PR" onClick={() => handleNavigation("/new-request")} />
+            {/* <NavButton icon={<List className="h-5 w-5 text-white mr-2" />} label="Requests" onClick={() => handleNavigation("/my-requests")} /> */}
             <NavButton icon={<BarChart3 className="h-5 w-5 text-white mr-2" />} label="Reports" onClick={() => handleNavigation("/reports")} />
             {user?.role === "admin" && (
               <>

@@ -52,12 +52,56 @@ export default function Reports() {
     setShowDetailsModal(true);
   };
 
-  const handleExport = () => {
-    // TODO: Implement CSV/Excel export functionality
-    console.log("Exporting reports with filters:", filters);
-  };
+  // For converting to csv format
+  const convertToCSV = (data: any[]) => {
+  if (!data.length) return "";
 
-  const filteredRequests = Array.isArray(requests) ? requests : [];
+  const headers = Object.keys(data[0]).filter(key => typeof data[0][key] !== "object");
+  const rows = data.map(row =>
+    headers.map(fieldName => {
+      let value = row[fieldName];
+      if (typeof value === "string") {
+        value = value.replace(/"/g, '""');
+      }
+      return `"${value ?? ""}"`;
+    }).join(",")
+  );
+
+  return [headers.join(","), ...rows].join("\r\n");
+};
+
+const downloadCSV = (csv: string, filename: string) => {
+  const blob = new Blob([csv], { type: "text/csv;charset=utf-8;" });
+  const url = URL.createObjectURL(blob);
+
+  const link = document.createElement("a");
+  link.setAttribute("href", url);
+  link.setAttribute("download", filename);
+  link.click();
+};
+
+ const handleExport = () => {
+  if (!filteredRequests.length) {
+    alert("No data available to export.");
+    return;
+  }
+
+  const simplifiedData = filteredRequests.map(req => ({
+    RequisitionNumber: req.requisitionNumber,
+    Title: req.title,
+    Requester: req.requester?.fullName,
+    Department: req.department,
+    Location: req.location,
+    Amount: req.totalEstimatedCost,
+    Status: req.status,
+    RequestDate: new Date(req.requestDate).toLocaleDateString(),
+  }));
+
+  const csv = convertToCSV(simplifiedData);
+  downloadCSV(csv, "purchase-request-report.csv");
+};
+
+ const filteredRequests = Array.isArray(requests) ? requests : [];
 
   return (
     <div className="min-h-screen bg-gray-50">

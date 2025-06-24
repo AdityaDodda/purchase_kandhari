@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { useQuery } from "@tanstack/react-query";
-import { FileText, Clock, CheckCircle, XCircle, Plus, List, ClipboardCheck, Package, Calendar, MapPin, DollarSign } from "lucide-react";
+import { FileText, Clock, CheckCircle, XCircle, Package, Calendar, MapPin, DollarSign } from "lucide-react";
 
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -104,7 +104,7 @@ export default function Dashboard() {
           </Card>
         </div>
 
-        {/* Quick Actions */}
+        {/* Quick Actions
         <Card className="mb-8">
           <CardHeader>
             <CardTitle>Quick Actions</CardTitle>
@@ -139,7 +139,7 @@ export default function Dashboard() {
               </Button>
             </div>
           </CardContent>
-        </Card>
+        </Card> */}
 
         {/* Recent Requests */}
         <Card>

@@ -4,7 +4,7 @@ import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
-import { Building, IdCard, Lock, Eye, EyeOff } from "lucide-react";
+import { IdCard, Lock, Eye, EyeOff } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
@@ -69,7 +69,7 @@ export default function Login() {
       <Card className="w-full max-w-md">
         <CardHeader className="text-center space-y-4">
           <div className="flex justify-center">
-            <Building className="h-12 w-12 text-[hsl(207,90%,54%)]" />
+            <img src="/assets/cola.png" alt="cola" />
           </div>
           <div>
             <h1 className="text-3xl font-bold text-gray-900">Welcome Back</h1>
