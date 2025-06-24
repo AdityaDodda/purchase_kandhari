@@ -413,6 +413,42 @@ export default function MyRequests() {
                   </div>
                 </div>
 
+                <Separator />
+
+                {/* Comments and Audit Log - THIS IS WHERE ADMIN COMMENTS APPEAR */}
+                <div className="bg-blue-50 border border-blue-200 rounded-lg p-4 mb-4">
+                  <h4 className="font-medium text-blue-800 mb-2">📋 Comments & Audit Trail</h4>
+                  <p className="text-sm text-blue-700 mb-2">
+                    <strong>This section shows:</strong>
+                  </p>
+                  <ul className="text-sm text-blue-700 space-y-1 ml-4">
+                    <li>• <strong>Comments Tab:</strong> All admin feedback when they approve, reject, or return your request</li>
+                    <li>• <strong>Audit Tab:</strong> Complete timeline of all actions taken on your request</li>
+                    <li>• You can also add your own comments to communicate with approvers</li>
+                  </ul>
+                  {selectedRequest?.status === 'returned' && (
+                    <div className="mt-3 p-3 bg-yellow-100 border border-yellow-300 rounded">
+                      <p className="text-sm text-yellow-800 font-medium">
+                        ⚠️ Your request was returned - Check the comments below to see what needs to be changed!
+                      </p>
+                    </div>
+                  )}
+                  {selectedRequest?.status === 'rejected' && (
+                    <div className="mt-3 p-3 bg-red-100 border border-red-300 rounded">
+                      <p className="text-sm text-red-800 font-medium">
+                        ❌ Your request was rejected - Check the comments below to see the reason!
+                      </p>
+                    </div>
+                  )}
+                </div>
+
+                <CommentsAuditLog 
+                  purchaseRequestId={selectedRequest?.id || 0}
+                  canComment={true}
+                />
+
+                <Separator />
+
                 {/* Progress Information */}
                 {selectedRequest && (
                   <div>
@@ -436,7 +472,9 @@ export default function MyRequests() {
                         {selectedRequest.status === "approved" 
                           ? "Request approved - Procurement in progress" 
                           : selectedRequest.status === "rejected"
-                          ? "Request has been rejected"
+                          ? "Request has been rejected - Check comments for details"
+                          : selectedRequest.status === "returned"
+                          ? "Request returned for revision - Check comments for required changes"
                           : selectedRequest.status === "pending"
                           ? "Awaiting approval from next level"
                           : "Under review"}
