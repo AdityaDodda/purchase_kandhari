@@ -106,6 +106,7 @@ Recent Changes:
 - January 24, 2025. Implemented CommentsAuditLog component for request communication and audit trails
 - January 24, 2025. Removed notifications from navbar and reorganized navigation structure
 - January 24, 2025. Updated admin dashboard with master data management quick access
+- January 24, 2025. Modified admin dashboard to show Pending Requests as default with toggle between All/Pending requests
 ```
 
 ## Test User Credentials

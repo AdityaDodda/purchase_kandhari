@@ -23,7 +23,7 @@ export default function AdminDashboard() {
   const { toast } = useToast();
   const queryClient = useQueryClient();
   const [filters, setFilters] = useState({
-    status: "all",
+    status: "pending", // Default to pending requests
     department: "all",
     location: "all",
     search: "",
@@ -152,41 +152,34 @@ export default function AdminDashboard() {
         {/* Header */}
         <div className="mb-8">
           <h1 className="text-3xl font-bold text-gray-900 mb-2">Admin Dashboard</h1>
-          <p className="text-gray-600">Monitor and manage all purchase requests across the organization</p>
+          <p className="text-gray-600">
+            {filters.status === "pending" 
+              ? "Review and approve pending purchase requests" 
+              : "Monitor and manage all purchase requests across the organization"}
+          </p>
         </div>
 
-        {/* Admin Masters Quick Access */}
+        {/* Request View Toggle */}
         <Card className="mb-8">
-          <CardHeader>
-            <CardTitle>Master Data Management</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+          <CardContent className="p-6">
+            <div className="flex justify-center space-x-4">
               <Button
-                variant="outline"
-                className="h-16 border-2 border-dashed border-[hsl(207,90%,54%)] text-[hsl(207,90%,54%)] hover:bg-[hsl(207,75%,95%)]"
-                onClick={() => setLocation("/admin-masters")}
+                variant={filters.status === "pending" ? "default" : "outline"}
+                className={filters.status === "pending" ? "bg-[hsl(207,90%,54%)] hover:bg-[hsl(211,100%,29%)]" : ""}
+                onClick={() => {
+                  setFilters(prev => ({ ...prev, status: "pending" }));
+                }}
               >
-                <Database className="h-5 w-5 mr-2" />
-                Masters
+                Pending Requests
               </Button>
               <Button
-                variant="outline"
-                className="h-16 border-2 border-dashed border-green-500 text-green-500 hover:bg-green-50"
+                variant={filters.status === "all" ? "default" : "outline"}
+                className={filters.status === "all" ? "bg-[hsl(207,90%,54%)] hover:bg-[hsl(211,100%,29%)]" : ""}
+                onClick={() => {
+                  setFilters(prev => ({ ...prev, status: "all" }));
+                }}
               >
-                Users
-              </Button>
-              <Button
-                variant="outline"
-                className="h-16 border-2 border-dashed border-purple-500 text-purple-500 hover:bg-purple-50"
-              >
-                Workflows
-              </Button>
-              <Button
-                variant="outline"
-                className="h-16 border-2 border-dashed border-orange-500 text-orange-500 hover:bg-orange-50"
-              >
-                Settings
+                All Purchase Requests
               </Button>
             </div>
           </CardContent>
@@ -345,7 +338,9 @@ export default function AdminDashboard() {
         {/* Requests Table */}
         <Card>
           <CardHeader>
-            <CardTitle>All Purchase Requests</CardTitle>
+            <CardTitle>
+              {filters.status === "pending" ? "Pending Purchase Requests" : "All Purchase Requests"}
+            </CardTitle>
           </CardHeader>
           <CardContent>
             <div className="overflow-x-auto">
