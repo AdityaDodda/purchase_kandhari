@@ -369,12 +369,20 @@ export function registerRoutes(app: Express): Server {
   app.post("/api/purchase-requests/:id/line-items", requireAuth, async (req: any, res) => {
     try {
       const purchaseRequestId = parseInt(req.params.id);
-      const lineItemData = insertLineItemSchema.parse({
+      
+      // Transform data to match schema expectations
+      const lineItemData = {
         ...req.body,
         purchaseRequestId,
-      });
+        requiredQuantity: typeof req.body.requiredQuantity === 'string' ? parseInt(req.body.requiredQuantity) : req.body.requiredQuantity,
+        estimatedCost: typeof req.body.estimatedCost === 'number' ? req.body.estimatedCost.toString() : req.body.estimatedCost,
+        requiredByDate: typeof req.body.requiredByDate === 'string' ? new Date(req.body.requiredByDate) : req.body.requiredByDate,
+        stockAvailable: req.body.stockAvailable ? 
+          (typeof req.body.stockAvailable === 'string' ? parseInt(req.body.stockAvailable) : req.body.stockAvailable) : 0,
+      };
 
-      const lineItem = await storage.createLineItem(lineItemData);
+      const validatedData = insertLineItemSchema.parse(lineItemData);
+      const lineItem = await storage.createLineItem(validatedData);
       
       // Update total estimated cost
       const allItems = await storage.getLineItemsByRequest(purchaseRequestId);
