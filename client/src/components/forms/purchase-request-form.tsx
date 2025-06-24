@@ -372,23 +372,30 @@ export function PurchaseRequestForm({ currentStep, onStepChange, onSubmit }: Pur
                   <div className="grid grid-cols-4 gap-4 font-medium text-gray-700 mb-2">
                     <span>Item</span>
                     <span>Quantity</span>
-                    <span>Unit Cost</span>
-                    <span>Total</span>
+                    <span>Unit</span>
+                    <span>Cost</span>
                   </div>
                   {lineItems.map((item, index) => (
                     <div key={index} className="grid grid-cols-4 gap-4 text-gray-900 py-1">
                       <span>{item.itemName}</span>
-                      <span>{item.requiredQuantity} {item.unitOfMeasure}</span>
+                      <span>{item.requiredQuantity}</span>
+                      <span>{item.unitOfMeasure}</span>
                       <span>₹{item.estimatedCost.toLocaleString()}</span>
-                      <span>₹{(item.requiredQuantity * item.estimatedCost).toLocaleString()}</span>
                     </div>
                   ))}
-                  <div className="border-t border-gray-300 mt-3 pt-3">
-                    <div className="flex justify-between font-semibold">
-                      <span>Total Estimated Cost:</span>
-                      <span>₹{lineItems.reduce((sum, item) => sum + (item.requiredQuantity * item.estimatedCost), 0).toLocaleString()}</span>
-                    </div>
+                </div>
+              </div>
+
+              {/* Total Cost Display */}
+              <div className="bg-green-50 border-2 border-green-200 rounded-lg p-6">
+                <div className="text-center">
+                  <h3 className="text-lg font-semibold text-gray-700 mb-2">Total Estimated Cost</h3>
+                  <div className="text-3xl font-bold text-green-700">
+                    ₹{lineItems.reduce((sum, item) => sum + item.estimatedCost, 0).toLocaleString()}
                   </div>
+                  <p className="text-sm text-gray-600 mt-2">
+                    {lineItems.length} item{lineItems.length !== 1 ? 's' : ''} total
+                  </p>
                 </div>
               </div>
 
