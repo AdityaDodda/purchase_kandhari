@@ -149,20 +149,18 @@ export default function AdminDashboard() {
       <Navbar />
       
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 pt-24">
-        {/* Header */}
+        {/* Header with Toggle Buttons */}
         <div className="mb-8">
-          <h1 className="text-3xl font-bold text-gray-900 mb-2">Admin Dashboard</h1>
-          <p className="text-gray-600">
-            {filters.status === "pending" 
-              ? "Review and approve pending purchase requests" 
-              : "Monitor and manage all purchase requests across the organization"}
-          </p>
-        </div>
-
-        {/* Request View Toggle */}
-        <Card className="mb-8">
-          <CardContent className="p-6">
-            <div className="flex justify-center space-x-4">
+          <div className="flex justify-between items-center mb-4">
+            <div>
+              <h1 className="text-3xl font-bold text-gray-900 mb-2">Admin Dashboard</h1>
+              <p className="text-gray-600">
+                {filters.status === "pending" 
+                  ? "Review and approve pending purchase requests" 
+                  : "Monitor and manage all purchase requests across the organization"}
+              </p>
+            </div>
+            <div className="flex space-x-4">
               <Button
                 variant={filters.status === "pending" ? "default" : "outline"}
                 className={filters.status === "pending" ? "bg-[hsl(207,90%,54%)] hover:bg-[hsl(211,100%,29%)]" : ""}
@@ -182,8 +180,8 @@ export default function AdminDashboard() {
                 All Purchase Requests
               </Button>
             </div>
-          </CardContent>
-        </Card>
+          </div>
+        </div>
 
         {/* Analytics Cards */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
