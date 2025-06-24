@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { Plus, Search, Download, Filter, X, Calendar, MapPin, Package, DollarSign } from "lucide-react";
-import { CommentsAuditLog } from "@/components/ui/comments-audit-log";
+// import { CommentsAuditLog } from "@/components/ui/comments-audit-log";
 
 import { Navbar } from "@/components/layout/navbar";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -442,10 +442,10 @@ export default function MyRequests() {
                   )}
                 </div>
 
-                <CommentsAuditLog 
+                {/* <CommentsAuditLog 
                   purchaseRequestId={selectedRequest?.id || 0}
                   canComment={true}
-                />
+                /> */}
 
                 <Separator />
 

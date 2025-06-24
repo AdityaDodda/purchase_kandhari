@@ -1,19 +1,19 @@
 import React from "react";
-import { Mail, Phone, MapPin } from "lucide-react";
-import {SiLinkedin,SiFacebook,SiInstagram,SiGithub} from "react-icons/si";
+import { Mail, MapPin } from "lucide-react";
+import { SiLinkedin, SiFacebook, SiInstagram, SiGithub } from "react-icons/si";
 
 export function Footer() {
   return (
-    <footer className="bg-[hsl(207,90%,54%)] text-white py-10 px-6 mt-auto">
-      <div className="max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-3 gap-10">
-        
-        {/* Company Info */}
+    <footer className="bg-[hsl(207,90%,54%)] text-white py-4 px-6 mt-auto">
+      <div className="max-w-7xl mx-auto flex flex-col md:flex-row justify-between gap-6">
+
+        {/* Left: Company Info */}
         <div>
-          <h2 className="text-2xl font-bold mb-3">KGBPL</h2>
-          <p className="text-sm leading-relaxed">
+          <h2 className="text-xl font-bold mb-2">KGBPL</h2>
+          <p className="text-sm leading-snug">
             Empowering businesses with seamless solutions.
           </p>
-          <div className="mt-4 text-sm space-y-2">
+          <div className="mt-2 text-sm space-y-1.5">
             <div className="flex items-center">
               <MapPin className="h-4 w-4 mr-2" />
               <span>Chandigarh, India</span>
@@ -22,17 +22,13 @@ export function Footer() {
               <Mail className="h-4 w-4 mr-2" />
               <span>contact@kgbpl.in</span>
             </div>
-            {/* <div className="flex items-center">
-              <Phone className="h-4 w-4 mr-2" />
-              <span>+91 98765 43210</span>
-            </div> */}
           </div>
         </div>
 
-        {/* Social Media */}
-        <div>
-          <h3 className="text-lg font-semibold mb-3">Follow Us</h3>
-          <div className="flex space-x-4 text-white text-xl">
+        {/* Right: Social Media */}
+        <div className="self-end md:self-start text-right">
+          <h3 className="text-base font-semibold mb-2">Follow Us</h3>
+          <div className="flex justify-end space-x-3 text-white text-lg">
             <a href="https://linkedin.com" target="_blank" rel="noopener noreferrer">
               <SiLinkedin className="hover:text-gray-300 transition" />
             </a>
@@ -49,8 +45,8 @@ export function Footer() {
         </div>
       </div>
 
-      {/* Bottom note */}
-      <div className="border-t border-white/30 mt-10 pt-4 text-center text-sm text-white/80">
+      {/* Bottom Note */}
+      <div className="border-t border-white/30 mt-6 pt-2 text-center text-xs text-white/80">
         &copy; {new Date().getFullYear()} KGBPL. All rights reserved.
       </div>
     </footer>

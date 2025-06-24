@@ -11,23 +11,34 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/u
 import { Separator } from "@/components/ui/separator";
 import { useLocation } from "wouter";
 import { LineItemsGrid } from "@/components/ui/line-items-grid";
-import { CommentsAuditLog } from "@/components/ui/comments-audit-log";
+// import { CommentsAuditLog } from "@/components/ui/comments-audit-log";
 
 export default function Dashboard() {
   const [, setLocation] = useLocation();
   const [selectedRequest, setSelectedRequest] = useState<any>(null);
   const [showDetailsModal, setShowDetailsModal] = useState(false);
+  const [activeView, setActiveView] = useState('pending');
 
   const { data: stats } = useQuery({
     queryKey: ["/api/dashboard/stats"],
   });
 
-  const { data: recentRequests } = useQuery({
-    queryKey: ["/api/purchase-requests", { limit: 5 }],
+  // THE FIX:
+  // 1. Create a dynamic parameter object based on the active view.
+  // When 'all' is selected, we pass an empty object.
+  // Otherwise, we pass the status filter.
+  const queryParams = activeView === 'all' 
+    ? {} 
+    : { status: activeView };
+
+  // 2. Use this dynamic object in the query key.
+  // This ensures React Query treats them as separate queries and fetches correctly.
+  const { data: requests, isLoading: isLoadingRequests } = useQuery({
+    queryKey: ["/api/purchase-requests", queryParams], 
   });
 
   const { data: requestDetails, isLoading: isLoadingDetails } = useQuery({
-    queryKey: ["/api/purchase-requests", selectedRequest?.id, "details"],
+    queryKey: [`/api/purchase-requests/${selectedRequest?.id}/details`],
     enabled: !!selectedRequest?.id,
   });
 
@@ -40,7 +51,7 @@ export default function Dashboard() {
     <div className="min-h-screen bg-gray-50">
       <Navbar />
       
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 pt-24">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 pt-20">
         {/* Header */}
         <div className="mb-8">
           <h1 className="text-3xl font-bold text-gray-900 mb-2">Purchase Request Dashboard</h1>
@@ -106,47 +117,25 @@ export default function Dashboard() {
           </Card>
         </div>
 
-        {/* Quick Actions
-        <Card className="mb-8">
-          <CardHeader>
-            <CardTitle>Quick Actions</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-              <Button
-                variant="outline"
-                className="h-20 border-2 border-dashed border-[hsl(207,90%,54%)] text-[hsl(207,90%,54%)] hover:bg-[hsl(207,75%,95%)]"
-                onClick={() => setLocation("/new-request")}
-              >
-                <Plus className="h-5 w-5 mr-2" />
-                Create New Request
-              </Button>
-
-              <Button
-                variant="outline"
-                className="h-20 border-2 border-dashed border-[hsl(32,100%,50%)] text-[hsl(32,100%,50%)] hover:bg-amber-50"
-                onClick={() => setLocation("/my-requests")}
-              >
-                <List className="h-5 w-5 mr-2" />
-                View My Requests
-              </Button>
-
-              <Button
-                variant="outline"
-                className="h-20 border-2 border-dashed border-green-500 text-green-500 hover:bg-green-50"
-                onClick={() => setLocation("/admin")}
-              >
-                <ClipboardCheck className="h-5 w-5 mr-2" />
-                Pending Approvals
-              </Button>
-            </div>
-          </CardContent>
-        </Card> */}
-
-        {/* My Requests - Recent & Pending */}
+        {/* My Requests Table */}
         <Card>
           <CardHeader>
-            <CardTitle>My Recent Requests & Pendings</CardTitle>
+            <div className="flex space-x-2">
+              <Button
+                variant={activeView === 'pending' ? 'default' : 'outline'}
+                className={activeView === 'pending' ? "bg-[hsl(207,90%,54%)] hover:bg-[hsl(211,100%,29%)]" : ""}
+                onClick={() => setActiveView('pending')}
+              >
+                Pending Requests
+              </Button>
+              <Button
+                variant={activeView === 'all' ? 'default' : 'outline'}
+                className={activeView === 'all' ? "bg-[hsl(207,90%,54%)] hover:bg-[hsl(211,100%,29%)]" : ""}
+                onClick={() => setActiveView('all')}
+              >
+                All My Requests
+              </Button>
+            </div>
           </CardHeader>
           <CardContent>
             <div className="overflow-x-auto">
@@ -174,8 +163,14 @@ export default function Dashboard() {
                   </tr>
                 </thead>
                 <tbody className="bg-white divide-y divide-gray-200">
-                  {Array.isArray(recentRequests) && recentRequests.length > 0 ? (
-                    recentRequests.map((request: any) => (
+                  {isLoadingRequests ? (
+                    <tr>
+                      <td colSpan={6} className="px-6 py-4 text-center text-gray-500">
+                        Loading requests...
+                      </td>
+                    </tr>
+                  ) : Array.isArray(requests) && requests.length > 0 ? (
+                    requests.map((request: any) => (
                       <tr key={request.id} className="hover:bg-gray-50">
                         <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
                           {request.requisitionNumber}
@@ -223,7 +218,7 @@ export default function Dashboard() {
                   ) : (
                     <tr>
                       <td colSpan={6} className="px-6 py-4 text-center text-gray-500">
-                        No recent requests found
+                        No requests found for this view.
                       </td>
                     </tr>
                   )}
@@ -324,10 +319,10 @@ export default function Dashboard() {
                 <Separator />
 
                 {/* Comments and Audit Log */}
-                <CommentsAuditLog 
+                {/* <CommentsAuditLog 
                   purchaseRequestId={selectedRequest?.id} 
                   canComment={true}
-                />
+                /> */}
 
                 {/* Progress Information */}
                 {selectedRequest && (

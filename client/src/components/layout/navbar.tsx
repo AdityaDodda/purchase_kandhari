@@ -72,7 +72,6 @@ export function Navbar() {
                 className="h-10 w-auto max-w-[100px] object-contain"
                 onError={(e) => {
                   console.error('Logo failed to load from /assets/cola.png');
-                  // Fallback to a text placeholder
                   const parent = e.currentTarget.parentElement;
                   if (parent) {
                     parent.innerHTML = '<span class="text-white font-bold text-sm bg-red-600 px-2 py-1 rounded">LOGO</span>';
@@ -81,7 +80,7 @@ export function Navbar() {
                 onLoad={() => console.log('Logo loaded successfully')}
               />
             </div>
-            <span className="text-white font-extrabold text-xl tracking-wide hover:text-[hsl(32,100%,50%)] transition-colors ml-3">
+            <span className="text-white font-extrabold text-xl tracking-wide hover:text-[hsla(6,100%,50%,1)] transition-colors ml-3">
               KGBPL
             </span>
           </div>

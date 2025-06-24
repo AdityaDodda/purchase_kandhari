@@ -93,23 +93,6 @@ The application is configured for deployment on Replit with:
 - File upload directory management
 - Development vs production environment detection
 
-## Recent Changes
-
-```
-Recent Changes:
-- January 24, 2025. Successfully migrated project from Replit Agent to Replit environment
-- January 24, 2025. Fixed server binding from localhost to 0.0.0.0 for Replit compatibility 
-- January 24, 2025. Set up PostgreSQL database and pushed schema successfully
-- January 24, 2025. Implemented KGBPL UI changes: removed quick actions, consolidated requests into dashboard
-- January 24, 2025. Added role-based routing (admin users see AdminDashboard by default)
-- January 24, 2025. Created LineItemsGrid component with stock checking and edit/delete functionality
-- January 24, 2025. Implemented CommentsAuditLog component for request communication and audit trails
-- January 24, 2025. Removed notifications from navbar and reorganized navigation structure
-- January 24, 2025. Updated admin dashboard with master data management quick access
-- January 24, 2025. Modified admin dashboard to show Pending Requests as default with toggle between All/Pending requests
-- January 24, 2025. Enhanced LineItemsGrid component with Excel-style table format, edit/delete actions, and total cost calculation
-```
-
 ## Test User Credentials
 
 For testing the system, use these login credentials:
