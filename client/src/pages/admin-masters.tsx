@@ -234,18 +234,18 @@ export default function AdminMasters() {
 
         {/* Add/Edit Dialog */}
         {showAddDialog && (
-          <Dialog open={showAddDialog} onOpenChange={setShowAddDialog}>
+        <Dialog open={showAddDialog} onOpenChange={setShowAddDialog}>
             <DialogContent className="max-w-2xl w-full max-h-[90vh] overflow-y-auto">
-              <DialogHeader>
+            <DialogHeader>
                 <DialogTitle>{editingItem ? `Edit ${activeTab.replace(/-/g, ' ')}` : `Add New ${activeTab.replace(/-/g, ' ')}`}</DialogTitle>
-              </DialogHeader>
-              <MasterForm
-                type={activeTab}
-                editingItem={editingItem}
-                onClose={() => setShowAddDialog(false)}
-              />
-            </DialogContent>
-          </Dialog>
+            </DialogHeader>
+            <MasterForm 
+              type={activeTab}
+              editingItem={editingItem}
+              onClose={() => setShowAddDialog(false)}
+            />
+          </DialogContent>
+        </Dialog>
         )}
       </div>
     </div>
