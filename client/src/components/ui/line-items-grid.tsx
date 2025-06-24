@@ -1,6 +1,6 @@
-import { useState } from "react";
+import { useState, useMemo } from "react";
 import { useQuery } from "@tanstack/react-query";
-import { Plus, Edit2, Trash2, Package, AlertCircle } from "lucide-react";
+import { Plus, Edit2, Trash2, Package, AlertCircle, Search } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -33,6 +33,8 @@ interface LineItemsGridProps {
 export function LineItemsGrid({ items, onItemsChange, editable = true }: LineItemsGridProps) {
   const [editingItem, setEditingItem] = useState<LineItem | null>(null);
   const [showAddDialog, setShowAddDialog] = useState(false);
+  const [searchTerm, setSearchTerm] = useState("");
+  const [selectedInventoryItem, setSelectedInventoryItem] = useState<any>(null);
   const [formData, setFormData] = useState<LineItem>({
     itemName: "",
     requiredQuantity: 1,
@@ -52,6 +54,16 @@ export function LineItemsGrid({ items, onItemsChange, editable = true }: LineIte
     queryKey: ["/api/inventory"],
     enabled: editable
   });
+
+  // Filter inventory based on search term
+  const filteredInventory = useMemo(() => {
+    if (!inventory || !searchTerm) return inventory || [];
+    return inventory.filter((item: any) => 
+      item.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      item.itemCode.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      item.description?.toLowerCase().includes(searchTerm.toLowerCase())
+    );
+  }, [inventory, searchTerm]);
 
   const checkStock = (itemName: string) => {
     if (!inventory) return null;
@@ -181,51 +193,61 @@ export function LineItemsGrid({ items, onItemsChange, editable = true }: LineIte
                 </DialogTitle>
               </DialogHeader>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <div>
+                <div className="md:col-span-2">
                   <Label htmlFor="itemName">Item Name</Label>
-                  <Select onValueChange={(value) => {
-                    const selectedItem = inventory?.find((item: any) => item.id.toString() === value);
-                    if (selectedItem) {
-                      setFormData({
-                        ...formData, 
-                        itemName: selectedItem.name,
-                        estimatedCost: selectedItem.unitPrice || 0,
-                        unitOfMeasure: selectedItem.unitOfMeasure || "",
-                        stockAvailable: selectedItem.quantity || 0,
-                        stockLocation: selectedItem.location || ""
-                      });
-                    }
-                  }}>
-                    <SelectTrigger>
-                      <SelectValue placeholder="Select an item from inventory" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      {inventory && inventory.length > 0 ? (
-                        inventory.map((item: any) => (
-                          <SelectItem key={item.id} value={item.id.toString()}>
-                            <div className="flex flex-col">
-                              <span className="font-medium">{item.name}</span>
-                              <span className="text-sm text-gray-500">
-                                Code: {item.itemCode} | Stock: {item.quantity} {item.unitOfMeasure} | ₹{item.unitPrice}
-                              </span>
-                            </div>
-                          </SelectItem>
-                        ))
-                      ) : (
-                        <SelectItem value="no-items" disabled>
-                          No inventory items available
-                        </SelectItem>
-                      )}
-                    </SelectContent>
-                  </Select>
-                  <div className="mt-2">
+                  
+                  {/* Search Input */}
+                  <div className="relative mb-2">
+                    <Search className="absolute left-3 top-3 h-4 w-4 text-gray-400" />
                     <Input
-                      placeholder="Or enter custom item name"
-                      value={formData.itemName}
-                      onChange={(e) => setFormData({...formData, itemName: e.target.value})}
-                      className="text-sm"
+                      placeholder="Search inventory items..."
+                      value={searchTerm}
+                      onChange={(e) => setSearchTerm(e.target.value)}
+                      className="pl-10"
                     />
                   </div>
+
+                  {/* Inventory Dropdown */}
+                  {searchTerm && filteredInventory.length > 0 && (
+                    <div className="border rounded-md max-h-48 overflow-y-auto mb-2 bg-white shadow-sm">
+                      {filteredInventory.map((item: any) => (
+                        <div
+                          key={item.id}
+                          className="p-3 hover:bg-gray-50 cursor-pointer border-b last:border-b-0"
+                          onClick={() => {
+                            setSelectedInventoryItem(item);
+                            setFormData({
+                              ...formData,
+                              itemName: item.name,
+                              estimatedCost: item.unitCost || 0,
+                              unitOfMeasure: item.unitOfMeasure || "",
+                              stockAvailable: item.quantity || 0,
+                              stockLocation: item.location || ""
+                            });
+                            setSearchTerm("");
+                          }}
+                        >
+                          <div className="flex flex-col">
+                            <span className="font-medium">{item.name}</span>
+                            <span className="text-sm text-gray-500">
+                              Code: {item.itemCode} | Stock: {item.quantity} {item.unitOfMeasure} | ₹{item.unitCost}
+                            </span>
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  )}
+
+                  {/* Manual Item Entry */}
+                  <Input
+                    placeholder="Or enter custom item name"
+                    value={formData.itemName}
+                    onChange={(e) => {
+                      setFormData({...formData, itemName: e.target.value});
+                      setSelectedInventoryItem(null);
+                    }}
+                    className="text-sm"
+                  />
                 </div>
                 <div>
                   <Label htmlFor="requiredQuantity">Required Quantity</Label>
@@ -233,8 +255,23 @@ export function LineItemsGrid({ items, onItemsChange, editable = true }: LineIte
                     id="requiredQuantity"
                     type="number"
                     value={formData.requiredQuantity}
-                    onChange={(e) => setFormData({...formData, requiredQuantity: parseInt(e.target.value) || 0})}
+                    onChange={(e) => {
+                      const requestedQty = parseInt(e.target.value) || 1;
+                      setFormData({...formData, requiredQuantity: requestedQty});
+                    }}
+                    placeholder="1"
+                    min="1"
                   />
+                  {selectedInventoryItem && formData.requiredQuantity > selectedInventoryItem.quantity && (
+                    <div className="mt-1 p-2 bg-yellow-50 border border-yellow-200 rounded text-sm">
+                      <p className="text-yellow-800">
+                        <strong>Stock Alert:</strong> Only {selectedInventoryItem.quantity} available in stock.
+                      </p>
+                      <p className="text-yellow-700 text-xs mt-1">
+                        Requesting {formData.requiredQuantity - selectedInventoryItem.quantity} additional units beyond stock.
+                      </p>
+                    </div>
+                  )}
                 </div>
                 <div>
                   <Label htmlFor="unitOfMeasure">Unit of Measure</Label>
