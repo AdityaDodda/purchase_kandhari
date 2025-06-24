@@ -47,16 +47,25 @@ function AuthWrapper({ children }: { children: React.ReactNode }) {
 }
 
 function Router() {
+  const { data: user } = useQuery({
+    queryKey: ["/api/auth/user"],
+    retry: false,
+  });
+
   return (
     <AuthWrapper>
       <Layout>
         <Switch>
-          <Route path="/" component={Dashboard} />
+          {/* Route based on user role */}
+          <Route path="/" component={user?.role === "admin" ? AdminDashboard : Dashboard} />
           <Route path="/new-request" component={NewRequest} />
-          <Route path="/my-requests" component={MyRequests} />
           <Route path="/reports" component={Reports} />
-          <Route path="/admin" component={AdminDashboard} />
-          <Route path="/admin-masters" component={AdminMasters} />
+          {user?.role === "admin" && (
+            <>
+              <Route path="/admin" component={AdminDashboard} />
+              <Route path="/admin-masters" component={AdminMasters} />
+            </>
+          )}
           <Route component={NotFound} />
         </Switch>
       </Layout>

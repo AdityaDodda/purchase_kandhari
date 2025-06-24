@@ -76,37 +76,17 @@ export function Navbar() {
           {/* Navigation Section */}
           <div className="flex items-center justify-center space-x-1 md:space-x-4">
             <NavButton icon={<Home className="h-5 w-5 text-white mr-2" />} label="Dashboard" onClick={() => handleNavigation("/")} />
-            <NavButton icon={<FileText className="h-5 w-5 text-white mr-2" />} label="New PR" onClick={() => handleNavigation("/new-request")} />
+            <NavButton icon={<FileText className="h-5 w-5 text-white mr-2" />} label="New Request" onClick={() => handleNavigation("/new-request")} />
             {/* <NavButton icon={<List className="h-5 w-5 text-white mr-2" />} label="Requests" onClick={() => handleNavigation("/my-requests")} /> */}
             <NavButton icon={<BarChart3 className="h-5 w-5 text-white mr-2" />} label="Reports" onClick={() => handleNavigation("/reports")} />
             {user?.role === "admin" && (
-              <>
-                <NavButton icon={<ClipboardCheck className="h-5 w-5 text-white mr-2" />} label="Admin" onClick={() => handleNavigation("/admin")} />
-                <NavButton icon={<Database className="h-5 w-5 text-white mr-2" />} label="Masters" onClick={() => handleNavigation("/admin-masters")} />
-              </>
+              <NavButton icon={<Database className="h-5 w-5 text-white mr-2" />} label="Masters" onClick={() => handleNavigation("/admin-masters")} />
             )}
           </div>
 
           {/* Right Section */}
           <div className="flex items-center space-x-6">
-            {/* Notifications */}
-            <div className="relative">
-              <Button 
-                variant="ghost" 
-                className="text-white hover:text-[hsl(32,100%,50%)] hover:bg-white/10 p-2 relative rounded-full"
-                onClick={() => handleNavigation("/notifications")}
-              >
-                <Bell className="h-5 w-5" />
-                {unreadNotifications.length > 0 && (
-                  <Badge 
-                    className="absolute -top-2 -right-2 h-5 w-5 p-0 flex items-center justify-center bg-red-500 text-white text-xs border-2 border-white"
-                    variant="destructive"
-                  >
-                    {unreadNotifications.length > 9 ? '9+' : unreadNotifications.length}
-                  </Badge>
-                )}
-              </Button>
-            </div>
+
 
             {/* User Dropdown */}
             <div className="relative">

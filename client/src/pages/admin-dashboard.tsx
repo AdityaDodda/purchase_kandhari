@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { useQuery } from "@tanstack/react-query";
-import { Search, Download, Filter, TrendingUp, Clock, DollarSign, BarChart3, Package, Calendar, MapPin } from "lucide-react";
+import { Search, Download, Filter, TrendingUp, Clock, DollarSign, BarChart3, Package, Calendar, MapPin, Database } from "lucide-react";
 
 import { Navbar } from "@/components/layout/navbar";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -12,8 +12,12 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Badge } from "@/components/ui/badge";
 import { Separator } from "@/components/ui/separator";
+import { useLocation } from "wouter";
+import { LineItemsGrid } from "@/components/ui/line-items-grid";
+import { CommentsAuditLog } from "@/components/ui/comments-audit-log";
 
 export default function AdminDashboard() {
+  const [, setLocation] = useLocation();
   const [filters, setFilters] = useState({
     status: "all",
     department: "all",
@@ -87,6 +91,43 @@ export default function AdminDashboard() {
           <h1 className="text-3xl font-bold text-gray-900 mb-2">Admin Dashboard</h1>
           <p className="text-gray-600">Monitor and manage all purchase requests across the organization</p>
         </div>
+
+        {/* Admin Masters Quick Access */}
+        <Card className="mb-8">
+          <CardHeader>
+            <CardTitle>Master Data Management</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+              <Button
+                variant="outline"
+                className="h-16 border-2 border-dashed border-[hsl(207,90%,54%)] text-[hsl(207,90%,54%)] hover:bg-[hsl(207,75%,95%)]"
+                onClick={() => setLocation("/admin-masters")}
+              >
+                <Database className="h-5 w-5 mr-2" />
+                Masters
+              </Button>
+              <Button
+                variant="outline"
+                className="h-16 border-2 border-dashed border-green-500 text-green-500 hover:bg-green-50"
+              >
+                Users
+              </Button>
+              <Button
+                variant="outline"
+                className="h-16 border-2 border-dashed border-purple-500 text-purple-500 hover:bg-purple-50"
+              >
+                Workflows
+              </Button>
+              <Button
+                variant="outline"
+                className="h-16 border-2 border-dashed border-orange-500 text-orange-500 hover:bg-orange-50"
+              >
+                Settings
+              </Button>
+            </div>
+          </CardContent>
+        </Card>
 
         {/* Analytics Cards */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
@@ -453,54 +494,20 @@ export default function AdminDashboard() {
 
                 <Separator />
 
-                {/* Line Items */}
-                <div>
-                  <h3 className="text-lg font-semibold mb-4 flex items-center">
-                    <Package className="h-5 w-5 mr-2 text-blue-600" />
-                    Line Items ({requestDetails?.lineItems?.length || 0})
-                  </h3>
-                  
-                  <div className="space-y-3">
-                    {requestDetails?.lineItems && requestDetails.lineItems.length > 0 ? (
-                      requestDetails.lineItems.map((item: any, index: number) => (
-                        <Card key={item.id} className="border-l-4 border-l-blue-500">
-                          <CardContent className="p-4">
-                            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                              <div className="md:col-span-2">
-                                <h4 className="font-semibold text-gray-900 mb-2">
-                                  {index + 1}. {item.itemName}
-                                </h4>
-                                {item.itemJustification && (
-                                  <p className="text-sm text-gray-600 mb-2">
-                                    {item.itemJustification}
-                                  </p>
-                                )}
-                                <div className="flex flex-wrap gap-4 text-sm text-gray-500">
-                                  <span>Quantity: <strong>{item.requiredQuantity} {item.unitOfMeasure}</strong></span>
-                                  <span>Required by: <strong>{new Date(item.requiredByDate).toLocaleDateString()}</strong></span>
-                                  <span>Delivery: <strong>{item.deliveryLocation}</strong></span>
-                                </div>
-                              </div>
-                              <div className="text-right">
-                                <div className="text-lg font-bold text-green-600">
-                                  ₹{parseFloat(item.estimatedCost || 0).toLocaleString()}
-                                </div>
-                                <div className="text-sm text-gray-500">
-                                  ₹{(parseFloat(item.estimatedCost || 0) / item.requiredQuantity).toFixed(2)} per {item.unitOfMeasure}
-                                </div>
-                              </div>
-                            </div>
-                          </CardContent>
-                        </Card>
-                      ))
-                    ) : (
-                      <div className="text-center py-8 text-gray-500">
-                        <Package className="h-12 w-12 mx-auto mb-4 opacity-50" />
-                        <p>No line items found for this request</p>
-                      </div>
-                    )}
-                  </div>
-                </div>
+                {/* Line Items Grid */}
+                <LineItemsGrid 
+                  items={requestDetails?.lineItems || []} 
+                  onItemsChange={() => {}} 
+                  editable={false}
+                />
+
+                <Separator />
+
+                {/* Comments and Audit Log */}
+                <CommentsAuditLog 
+                  purchaseRequestId={selectedRequest?.id} 
+                  canComment={true}
+                />
 
                 {/* Progress Information */}
                 {selectedRequest && (

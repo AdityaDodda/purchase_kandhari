@@ -10,6 +10,8 @@ import { StatusBadge } from "@/components/ui/status-badge";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Separator } from "@/components/ui/separator";
 import { useLocation } from "wouter";
+import { LineItemsGrid } from "@/components/ui/line-items-grid";
+import { CommentsAuditLog } from "@/components/ui/comments-audit-log";
 
 export default function Dashboard() {
   const [, setLocation] = useLocation();
@@ -141,10 +143,10 @@ export default function Dashboard() {
           </CardContent>
         </Card> */}
 
-        {/* Recent Requests */}
+        {/* My Requests - Recent & Pending */}
         <Card>
           <CardHeader>
-            <CardTitle>Recent Requests</CardTitle>
+            <CardTitle>My Recent Requests & Pendings</CardTitle>
           </CardHeader>
           <CardContent>
             <div className="overflow-x-auto">
@@ -301,54 +303,20 @@ export default function Dashboard() {
 
                 <Separator />
 
-                {/* Line Items */}
-                <div>
-                  <h3 className="text-lg font-semibold mb-4 flex items-center">
-                    <Package className="h-5 w-5 mr-2 text-blue-600" />
-                    Line Items ({requestDetails?.lineItems?.length || 0})
-                  </h3>
-                  
-                  <div className="space-y-3">
-                    {requestDetails?.lineItems && requestDetails.lineItems.length > 0 ? (
-                      requestDetails.lineItems.map((item: any, index: number) => (
-                        <Card key={item.id} className="border-l-4 border-l-blue-500">
-                          <CardContent className="p-4">
-                            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                              <div className="md:col-span-2">
-                                <h4 className="font-semibold text-gray-900 mb-2">
-                                  {index + 1}. {item.itemName}
-                                </h4>
-                                {item.itemJustification && (
-                                  <p className="text-sm text-gray-600 mb-2">
-                                    {item.itemJustification}
-                                  </p>
-                                )}
-                                <div className="flex flex-wrap gap-4 text-sm text-gray-500">
-                                  <span>Quantity: <strong>{item.requiredQuantity} {item.unitOfMeasure}</strong></span>
-                                  <span>Required by: <strong>{new Date(item.requiredByDate).toLocaleDateString()}</strong></span>
-                                  <span>Delivery: <strong>{item.deliveryLocation}</strong></span>
-                                </div>
-                              </div>
-                              <div className="text-right">
-                                <div className="text-lg font-bold text-green-600">
-                                  ₹{parseFloat(item.estimatedCost || 0).toLocaleString()}
-                                </div>
-                                <div className="text-sm text-gray-500">
-                                  ₹{(parseFloat(item.estimatedCost || 0) / item.requiredQuantity).toFixed(2)} per {item.unitOfMeasure}
-                                </div>
-                              </div>
-                            </div>
-                          </CardContent>
-                        </Card>
-                      ))
-                    ) : (
-                      <div className="text-center py-8 text-gray-500">
-                        <Package className="h-12 w-12 mx-auto mb-4 opacity-50" />
-                        <p>No line items found for this request</p>
-                      </div>
-                    )}
-                  </div>
-                </div>
+                {/* Line Items Grid */}
+                <LineItemsGrid 
+                  items={requestDetails?.lineItems || []} 
+                  onItemsChange={() => {}} 
+                  editable={false}
+                />
+
+                <Separator />
+
+                {/* Comments and Audit Log */}
+                <CommentsAuditLog 
+                  purchaseRequestId={selectedRequest?.id} 
+                  canComment={true}
+                />
 
                 {/* Progress Information */}
                 {selectedRequest && (

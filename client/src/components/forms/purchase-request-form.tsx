@@ -16,7 +16,7 @@ import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip
 import { useToast } from "@/hooks/use-toast";
 import { apiRequest } from "@/lib/queryClient";
 import { DEPARTMENTS, LOCATIONS, BUSINESS_JUSTIFICATION_CODES, UNITS_OF_MEASURE } from "@/lib/constants";
-import { LineItemForm } from "./line-item-form";
+import { LineItemsGrid } from "@/components/ui/line-items-grid";
 import { FileUpload } from "@/components/ui/file-upload";
 import type { LineItemFormData } from "@/lib/types";
 
@@ -270,89 +270,28 @@ export function PurchaseRequestForm({ currentStep, onStepChange, onSubmit }: Pur
       {/* Step 2: Line Items */}
       {currentStep === 2 && (
         <Card>
-          <CardHeader>
-            <div className="flex justify-between items-center">
-              <CardTitle>Line Items</CardTitle>
-              <LineItemForm onAddItem={handleAddLineItem} />
+          <CardContent className="p-6">
+            <LineItemsGrid 
+              items={lineItems} 
+              onItemsChange={setLineItems}
+              editable={true}
+            />
+
+            <div className="flex justify-between mt-6">
+              <Button variant="outline" onClick={handlePrevStep}>
+                Previous
+              </Button>
+              <Button
+                onClick={handleNextStep}
+                className="bg-[hsl(207,90%,54%)] hover:bg-[hsl(211,100%,29%)]"
+                disabled={lineItems.length === 0}
+              >
+                Next Step
+              </Button>
             </div>
-          </CardHeader>
-          <CardContent>
-            <div className="space-y-4">
-              {lineItems.length === 0 ? (
-                <div className="text-center py-8 text-gray-500">
-                  <p>No line items added yet</p>
-                  <p className="text-sm">Use the "Add Item" button to add items to your request</p>
-                </div>
-              ) : (
-                lineItems.map((item, index) => (
-                  <div key={index} className="border border-gray-200 rounded-lg p-4">
-                    <div className="flex justify-between items-center mb-4">
-                      <h3 className="font-semibold text-gray-900">Item #{index + 1}</h3>
-                      <Button
-                        variant="ghost"
-                        size="sm"
-                        onClick={() => handleRemoveLineItem(index)}
-                        className="text-red-500 hover:text-red-700"
-                      >
-                        <Minus className="h-4 w-4" />
-                      </Button>
-                    </div>
-
-                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 text-sm">
-                      <div>
-                        <span className="text-gray-500">Item Name:</span>
-                        <p className="font-medium">{item.itemName}</p>
-                      </div>
-                      <div>
-                        <span className="text-gray-500">Quantity:</span>
-                        <p className="font-medium">{item.requiredQuantity} {item.unitOfMeasure}</p>
-                      </div>
-                      <div>
-                        <span className="text-gray-500">Required By:</span>
-                        <p className="font-medium">{new Date(item.requiredByDate).toLocaleDateString()}</p>
-                      </div>
-                      <div>
-                        <span className="text-gray-500">Delivery Location:</span>
-                        <p className="font-medium">{item.deliveryLocation}</p>
-                      </div>
-                      <div>
-                        <span className="text-gray-500">Estimated Cost:</span>
-                        <p className="font-medium">₹{item.estimatedCost.toLocaleString()}</p>
-                      </div>
-                      {item.itemJustification && (
-                        <div className="md:col-span-2 lg:col-span-3">
-                          <span className="text-gray-500">Justification:</span>
-                          <p className="font-medium">{item.itemJustification}</p>
-                        </div>
-                      )}
-                    </div>
-
-                    {/* Mock Stock Availability */}
-                    <div className="bg-green-50 border border-green-200 rounded-lg p-3 mt-4">
-                      <div className="flex items-center">
-                        <div className="w-2 h-2 bg-green-500 rounded-full mr-2"></div>
-                        <span className="text-sm text-green-700 font-medium">
-                          Stock Available: {Math.floor(Math.random() * 100) + 10} units in warehouse
-                        </span>
-                      </div>
-                    </div>
-                  </div>
-                ))
-              )}
-
-              <div className="flex justify-between mt-6">
-                <Button variant="outline" onClick={handlePrevStep}>
-                  Previous
-                </Button>
-                <Button
-                  onClick={handleNextStep}
-                  className="bg-[hsl(207,90%,54%)] hover:bg-[hsl(211,100%,29%)]"
-                  disabled={lineItems.length === 0}
-                >
-                  Next Step
-                </Button>
-              </div>
-            </div>
+          </CardContent>
+        </Card>
+      )}
           </CardContent>
         </Card>
       )}
