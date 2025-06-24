@@ -292,9 +292,6 @@ export function PurchaseRequestForm({ currentStep, onStepChange, onSubmit }: Pur
           </CardContent>
         </Card>
       )}
-          </CardContent>
-        </Card>
-      )}
 
       {/* Step 3: Attachments */}
       {currentStep === 3 && (

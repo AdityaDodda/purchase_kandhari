@@ -93,16 +93,19 @@ The application is configured for deployment on Replit with:
 - File upload directory management
 - Development vs production environment detection
 
-## Changelog
+## Recent Changes
 
 ```
-Changelog:
-- June 19, 2025. Initial setup
-- June 19, 2025. Fixed authentication system and created test users with proper password hashing
-- June 19, 2025. Implemented RBAC-enabled dashboard statistics and fixed detailed view functionality
-- June 19, 2025. Corrected demo data alignment - all purchase request totals now match line item calculations with realistic business pricing
-- June 19, 2025. Implemented comprehensive Reports system with multi-parameter filtering (date, user, status, department, location)
-- June 19, 2025. Created complete Admin Masters system with 9 master data tables: Users, Entities, Departments, Locations, Roles, Approval Matrix, Escalation Matrix, Inventory, and Vendors
+Recent Changes:
+- January 24, 2025. Successfully migrated project from Replit Agent to Replit environment
+- January 24, 2025. Fixed server binding from localhost to 0.0.0.0 for Replit compatibility 
+- January 24, 2025. Set up PostgreSQL database and pushed schema successfully
+- January 24, 2025. Implemented KGBPL UI changes: removed quick actions, consolidated requests into dashboard
+- January 24, 2025. Added role-based routing (admin users see AdminDashboard by default)
+- January 24, 2025. Created LineItemsGrid component with stock checking and edit/delete functionality
+- January 24, 2025. Implemented CommentsAuditLog component for request communication and audit trails
+- January 24, 2025. Removed notifications from navbar and reorganized navigation structure
+- January 24, 2025. Updated admin dashboard with master data management quick access
 ```
 
 ## Test User Credentials
