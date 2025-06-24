@@ -173,11 +173,22 @@ export function CommentsAuditLog({ purchaseRequestId, canComment = true }: Comme
               ) : Array.isArray(comments) && comments.length > 0 ? (
                 comments.map((comment: Comment) => {
                   const { date, time } = formatDateTime(comment.createdAt);
+                  const isAdminComment = comment.userRole === 'admin' || comment.userRole === 'approver';
+                  const isActionComment = comment.type !== 'comment';
+                  
                   return (
-                    <div key={comment.id} className="border rounded-lg p-4">
+                    <div key={comment.id} className={`border rounded-lg p-4 ${
+                      isAdminComment && isActionComment 
+                        ? 'border-red-200 bg-red-50' 
+                        : isAdminComment 
+                        ? 'border-blue-200 bg-blue-50' 
+                        : 'bg-white'
+                    }`}>
                       <div className="flex items-start justify-between mb-2">
                         <div className="flex items-center space-x-2">
-                          <div className="w-8 h-8 bg-[hsl(207,90%,54%)] rounded-full flex items-center justify-center">
+                          <div className={`w-8 h-8 rounded-full flex items-center justify-center ${
+                            isAdminComment ? 'bg-red-500' : 'bg-[hsl(207,90%,54%)]'
+                          }`}>
                             <User className="h-4 w-4 text-white" />
                           </div>
                           <div>

@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { Plus, Search, Download, Filter, X, Calendar, MapPin, Package, DollarSign } from "lucide-react";
+import { CommentsAuditLog } from "@/components/ui/comments-audit-log";
 
 import { Navbar } from "@/components/layout/navbar";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -75,6 +76,52 @@ export default function MyRequests() {
             New Request
           </Button>
         </div>
+
+        {/* Alert for Returned/Rejected Requests */}
+        {requests && requests.filter((r: any) => r.status === 'returned' || r.status === 'rejected').length > 0 && (
+          <Card className="mb-6 border-red-200 bg-red-50">
+            <CardContent className="p-4">
+              <div className="flex items-start space-x-3">
+                <div className="flex-shrink-0">
+                  <div className="w-8 h-8 bg-red-500 rounded-full flex items-center justify-center">
+                    <X className="h-5 w-5 text-white" />
+                  </div>
+                </div>
+                <div className="flex-1">
+                  <h3 className="text-lg font-semibold text-red-800 mb-2">Action Required</h3>
+                  <p className="text-red-700 mb-3">
+                    You have {requests.filter((r: any) => r.status === 'returned').length} returned and {requests.filter((r: any) => r.status === 'rejected').length} rejected requests that need your attention.
+                  </p>
+                  <div className="space-y-2">
+                    {requests.filter((r: any) => r.status === 'returned' || r.status === 'rejected').slice(0, 3).map((request: any) => (
+                      <div key={request.id} className="bg-white rounded p-3 border border-red-200">
+                        <div className="flex justify-between items-center">
+                          <div>
+                            <span className="font-medium text-red-800">{request.title}</span>
+                            <Badge className={`ml-2 ${request.status === 'returned' ? 'bg-yellow-100 text-yellow-800' : 'bg-red-100 text-red-800'}`}>
+                              {request.status.toUpperCase()}
+                            </Badge>
+                          </div>
+                          <Button 
+                            size="sm" 
+                            variant="outline" 
+                            className="text-red-600 border-red-300 hover:bg-red-100"
+                            onClick={() => handleViewDetails(request)}
+                          >
+                            View Comments
+                          </Button>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                  <p className="text-xs text-red-600 mt-3">
+                    Click "View Comments" to see admin feedback and take necessary action.
+                  </p>
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+        )}
 
         {/* Filters */}
         <Card className="mb-6">
