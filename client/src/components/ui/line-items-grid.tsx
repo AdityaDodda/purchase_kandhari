@@ -156,6 +156,9 @@ export function LineItemsGrid({ items, onItemsChange, editable = true }: LineIte
     );
   };
 
+  // Calculate total cost
+  const totalCost = items.reduce((sum, item) => sum + (item.estimatedCost || 0), 0);
+
   return (
     <div className="space-y-4">
       <div className="flex justify-between items-center">
@@ -278,76 +281,94 @@ export function LineItemsGrid({ items, onItemsChange, editable = true }: LineIte
           </CardContent>
         </Card>
       ) : (
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-          {items.map((item, index) => (
-            <Card key={item.id || index} className="border-l-4 border-l-blue-500">
-              <CardHeader className="pb-3">
-                <div className="flex justify-between items-start">
-                  <CardTitle className="text-base font-semibold">
-                    {index + 1}. {item.itemName}
-                  </CardTitle>
-                  {editable && (
-                    <div className="flex space-x-1">
-                      <Button
-                        variant="ghost"
-                        size="sm"
-                        onClick={() => handleEditItem(item)}
-                        className="h-8 w-8 p-0"
-                      >
-                        <Edit2 className="h-4 w-4" />
-                      </Button>
-                      <Button
-                        variant="ghost"
-                        size="sm"
-                        onClick={() => handleDeleteItem(item.id)}
-                        className="h-8 w-8 p-0 text-red-600 hover:text-red-700"
-                      >
-                        <Trash2 className="h-4 w-4" />
-                      </Button>
-                    </div>
-                  )}
-                </div>
-                {getStockBadge(item)}
-              </CardHeader>
-              <CardContent className="space-y-3">
-                <div className="grid grid-cols-2 gap-2 text-sm">
-                  <div>
-                    <span className="text-gray-500">Quantity:</span>
-                    <div className="font-medium">{item.requiredQuantity} {item.unitOfMeasure}</div>
-                  </div>
-                  <div>
-                    <span className="text-gray-500">Cost:</span>
-                    <div className="font-medium text-green-600">₹{item.estimatedCost.toLocaleString()}</div>
-                  </div>
-                  <div>
-                    <span className="text-gray-500">Required By:</span>
-                    <div className="font-medium">{new Date(item.requiredByDate).toLocaleDateString()}</div>
-                  </div>
-                  <div>
-                    <span className="text-gray-500">Location:</span>
-                    <div className="font-medium">{item.deliveryLocation}</div>
-                  </div>
-                </div>
-                
-                {item.itemJustification && (
-                  <div className="text-sm">
-                    <span className="text-gray-500">Justification:</span>
-                    <p className="text-gray-700 mt-1">{item.itemJustification}</p>
-                  </div>
-                )}
-
-                {getStockStatus(item) !== "in-stock" && (
-                  <div className="flex items-center text-sm text-amber-600 bg-amber-50 p-2 rounded">
-                    <AlertCircle className="h-4 w-4 mr-2" />
-                    {getStockStatus(item) === "low-stock" 
-                      ? `Only ${item.stockAvailable} available` 
-                      : "Item not in stock"}
-                  </div>
-                )}
-              </CardContent>
-            </Card>
-          ))}
-        </div>
+        <Card>
+          <CardContent className="p-0">
+            {/* Excel-style table */}
+            <div className="overflow-x-auto">
+              <table className="w-full border-collapse">
+                <thead>
+                  <tr className="bg-gray-50 border-b">
+                    <th className="text-left p-3 font-semibold text-sm border-r">#</th>
+                    <th className="text-left p-3 font-semibold text-sm border-r min-w-[200px]">Item Name</th>
+                    <th className="text-left p-3 font-semibold text-sm border-r">Qty</th>
+                    <th className="text-left p-3 font-semibold text-sm border-r">Unit</th>
+                    <th className="text-left p-3 font-semibold text-sm border-r">Required By</th>
+                    <th className="text-left p-3 font-semibold text-sm border-r">Location</th>
+                    <th className="text-left p-3 font-semibold text-sm border-r">Cost (₹)</th>
+                    <th className="text-left p-3 font-semibold text-sm border-r">Stock Status</th>
+                    {editable && <th className="text-center p-3 font-semibold text-sm">Actions</th>}
+                  </tr>
+                </thead>
+                <tbody>
+                  {items.map((item, index) => (
+                    <tr key={item.id || index} className="border-b hover:bg-gray-50">
+                      <td className="p-3 border-r text-sm font-medium">{index + 1}</td>
+                      <td className="p-3 border-r">
+                        <div className="font-medium text-sm">{item.itemName}</div>
+                        {item.itemJustification && (
+                          <div className="text-xs text-gray-500 mt-1 max-w-xs truncate" title={item.itemJustification}>
+                            {item.itemJustification}
+                          </div>
+                        )}
+                      </td>
+                      <td className="p-3 border-r text-sm">{item.requiredQuantity}</td>
+                      <td className="p-3 border-r text-sm">{item.unitOfMeasure}</td>
+                      <td className="p-3 border-r text-sm">{new Date(item.requiredByDate).toLocaleDateString()}</td>
+                      <td className="p-3 border-r text-sm">{item.deliveryLocation}</td>
+                      <td className="p-3 border-r text-sm font-semibold text-green-600">
+                        ₹{item.estimatedCost.toLocaleString()}
+                      </td>
+                      <td className="p-3 border-r text-sm">
+                        {getStockBadge(item)}
+                        {getStockStatus(item) !== "in-stock" && (
+                          <div className="flex items-center text-xs text-amber-600 mt-1">
+                            <AlertCircle className="h-3 w-3 mr-1" />
+                            {getStockStatus(item) === "low-stock" 
+                              ? `Only ${item.stockAvailable} left` 
+                              : "Out of stock"}
+                          </div>
+                        )}
+                      </td>
+                      {editable && (
+                        <td className="p-3 text-center">
+                          <div className="flex justify-center space-x-1">
+                            <Button
+                              variant="ghost"
+                              size="sm"
+                              onClick={() => handleEditItem(item)}
+                              className="h-8 w-8 p-0 hover:bg-blue-100"
+                            >
+                              <Edit2 className="h-4 w-4 text-blue-600" />
+                            </Button>
+                            <Button
+                              variant="ghost"
+                              size="sm"
+                              onClick={() => handleDeleteItem(item.id)}
+                              className="h-8 w-8 p-0 hover:bg-red-100"
+                            >
+                              <Trash2 className="h-4 w-4 text-red-600" />
+                            </Button>
+                          </div>
+                        </td>
+                      )}
+                    </tr>
+                  ))}
+                  {/* Total row */}
+                  <tr className="border-t-2 bg-blue-50">
+                    <td colSpan={editable ? 6 : 5} className="p-3 text-right font-semibold text-sm">
+                      Total Estimated Cost:
+                    </td>
+                    <td className="p-3 border-r font-bold text-lg text-green-700">
+                      ₹{totalCost.toLocaleString()}
+                    </td>
+                    <td className="p-3 border-r"></td>
+                    {editable && <td className="p-3"></td>}
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </CardContent>
+        </Card>
       )}
     </div>
   );

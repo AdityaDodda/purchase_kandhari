@@ -107,6 +107,7 @@ Recent Changes:
 - January 24, 2025. Removed notifications from navbar and reorganized navigation structure
 - January 24, 2025. Updated admin dashboard with master data management quick access
 - January 24, 2025. Modified admin dashboard to show Pending Requests as default with toggle between All/Pending requests
+- January 24, 2025. Enhanced LineItemsGrid component with Excel-style table format, edit/delete actions, and total cost calculation
 ```
 
 ## Test User Credentials
