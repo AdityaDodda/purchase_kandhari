@@ -214,18 +214,22 @@ export function registerRoutes(app: Express): Server {
   // Purchase Request routes
   app.post("/api/purchase-requests", requireAuth, async (req: any, res) => {
     try {
-      const requestData = insertPurchaseRequestSchema.parse({
+      // Generate requisition number first
+      const requisitionNumber = await storage.generateRequisitionNumber(req.body.department);
+      
+      // Transform and prepare request data
+      const requestData = {
         ...req.body,
         requesterId: req.session.user.id,
-      });
+        requestDate: new Date(req.body.requestDate),
+        totalEstimatedCost: req.body.totalEstimatedCost || "0",
+        requisitionNumber, // Add the generated requisition number
+      };
 
-      // Generate requisition number
-      const requisitionNumber = await storage.generateRequisitionNumber(requestData.department);
+      // Validate with schema
+      const validatedData = insertPurchaseRequestSchema.parse(requestData);
       
-      const newRequest = await storage.createPurchaseRequest({
-        ...requestData,
-        requisitionNumber,
-      });
+      const newRequest = await storage.createPurchaseRequest(validatedData);
 
       // Create notification for requester
       await storage.createNotification({
