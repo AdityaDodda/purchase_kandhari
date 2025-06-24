@@ -183,12 +183,49 @@ export function LineItemsGrid({ items, onItemsChange, editable = true }: LineIte
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div>
                   <Label htmlFor="itemName">Item Name</Label>
-                  <Input
-                    id="itemName"
-                    value={formData.itemName}
-                    onChange={(e) => setFormData({...formData, itemName: e.target.value})}
-                    placeholder="Enter item name"
-                  />
+                  <Select onValueChange={(value) => {
+                    const selectedItem = inventory?.find((item: any) => item.id.toString() === value);
+                    if (selectedItem) {
+                      setFormData({
+                        ...formData, 
+                        itemName: selectedItem.name,
+                        estimatedCost: selectedItem.unitPrice || 0,
+                        unitOfMeasure: selectedItem.unitOfMeasure || "",
+                        stockAvailable: selectedItem.quantity || 0,
+                        stockLocation: selectedItem.location || ""
+                      });
+                    }
+                  }}>
+                    <SelectTrigger>
+                      <SelectValue placeholder="Select an item from inventory" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {inventory && inventory.length > 0 ? (
+                        inventory.map((item: any) => (
+                          <SelectItem key={item.id} value={item.id.toString()}>
+                            <div className="flex flex-col">
+                              <span className="font-medium">{item.name}</span>
+                              <span className="text-sm text-gray-500">
+                                Code: {item.itemCode} | Stock: {item.quantity} {item.unitOfMeasure} | ₹{item.unitPrice}
+                              </span>
+                            </div>
+                          </SelectItem>
+                        ))
+                      ) : (
+                        <SelectItem value="no-items" disabled>
+                          No inventory items available
+                        </SelectItem>
+                      )}
+                    </SelectContent>
+                  </Select>
+                  <div className="mt-2">
+                    <Input
+                      placeholder="Or enter custom item name"
+                      value={formData.itemName}
+                      onChange={(e) => setFormData({...formData, itemName: e.target.value})}
+                      className="text-sm"
+                    />
+                  </div>
                 </div>
                 <div>
                   <Label htmlFor="requiredQuantity">Required Quantity</Label>

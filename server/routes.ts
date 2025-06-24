@@ -853,6 +853,17 @@ export function registerRoutes(app: Express): Server {
     }
   });
 
+  // Inventory API for line items dropdown
+  app.get('/api/inventory', requireAuth, async (req: any, res) => {
+    try {
+      const inventory = await storage.getAllInventory();
+      res.json(inventory);
+    } catch (error) {
+      console.error('Error fetching inventory:', error);
+      res.status(500).json({ message: 'Failed to fetch inventory' });
+    }
+  });
+
   const httpServer = createServer(app);
   return httpServer;
 }
