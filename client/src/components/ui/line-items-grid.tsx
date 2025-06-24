@@ -219,6 +219,7 @@ export function LineItemsGrid({ items, onItemsChange, editable = true }: LineIte
                             setFormData({
                               ...formData,
                               itemName: item.name,
+                              requiredQuantity: Math.min(5, item.quantity || 1), // Default to 5 or available stock
                               estimatedCost: item.unitCost || 0,
                               unitOfMeasure: item.unitOfMeasure || "",
                               stockAvailable: item.quantity || 0,
