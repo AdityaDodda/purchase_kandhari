@@ -80,16 +80,7 @@ export function PurchaseRequestForm({ currentStep, onStepChange, onSubmit }: Pur
       }
 
       queryClient.invalidateQueries({ queryKey: ["/api/purchase-requests"] });
-      toast({ 
-        title: "Success!", 
-        description: `Purchase request ${request.requisitionNumber} submitted successfully. You can create another request or view it in My Requests.`
-      });
-      
-      // Reset form state
-      setLineItems([]);
-      setAttachments([]);
-      setConfirmed(false);
-      
+      toast({ title: "Success!", description: "Purchase request submitted successfully." });
       onSubmit();
     },
     onError: (error) => {

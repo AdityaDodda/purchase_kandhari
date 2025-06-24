@@ -17,8 +17,7 @@ export default function NewRequest() {
   ];
 
   const handleRequestSubmit = () => {
-    // Reset to step 1 and stay on new request page
-    setCurrentStep(1);
+    setLocation("/my-requests");
   };
 
   return (
