@@ -98,14 +98,12 @@ export function Navbar() {
 
           {/* Right Section */}
           <div className="flex items-center space-x-6">
-            {/* Notifications */}
+            {/* Notifications
             <div className="relative">
               <DropdownMenu>
                 <DropdownMenuTrigger asChild>
-                  <Button 
-                    variant="ghost" 
-                    className="relative text-white hover:text-[hsl(32,100%,50%)] hover:bg-white/10 transition-colors duration-200 p-2"
-                  >
+                  <Button variant="ghost" 
+                    className="relative text-white hover:text-[hsl(32,100%,50%)] hover:bg-white/10 transition-colors duration-200 p-2">
                     <Bell className="h-5 w-5" />
                     {notifications && notifications.filter((n: any) => !n.isRead).length > 0 && (
                       <Badge className="absolute -top-1 -right-1 h-5 w-5 p-0 text-xs bg-red-500 hover:bg-red-500">
@@ -117,8 +115,8 @@ export function Navbar() {
                 <DropdownMenuContent 
                   align="end" 
                   className="w-80 max-h-96 overflow-y-auto"
-                  sideOffset={5}
-                >
+                  sideOffset={5}>
+
                   <div className="px-3 py-2 border-b">
                     <h3 className="font-semibold text-sm">Notifications</h3>
                   </div>
@@ -127,8 +125,7 @@ export function Navbar() {
                       <DropdownMenuItem 
                         key={notification.id}
                         className={`px-3 py-3 cursor-pointer hover:bg-gray-50 ${!notification.isRead ? 'bg-blue-50' : ''}`}
-                        onClick={() => markNotificationAsRead(notification.id)}
-                      >
+                        onClick={() => markNotificationAsRead(notification.id)}>
                         <div className="w-full">
                           <div className="flex justify-between items-start mb-1">
                             <h4 className="font-medium text-sm text-gray-900 truncate pr-2">
@@ -162,7 +159,7 @@ export function Navbar() {
                   )}
                 </DropdownMenuContent>
               </DropdownMenu>
-            </div>
+            </div> */}
 
             {/* User Dropdown */}
             <div className="relative">
