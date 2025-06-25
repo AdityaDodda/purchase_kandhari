@@ -75,11 +75,13 @@ export function LineItemsGrid({ items, onItemsChange, editable = true }: LineIte
 
   const handleAddItem = () => {
     const stockInfo = checkStock(formData.itemName);
+    const calculatedEstimatedCost = (formData.requiredQuantity || 0) * (formData.estimatedCost || 0);
     const newItem = {
       ...formData,
       id: Date.now(), // Temporary ID
       stockAvailable: stockInfo?.quantity || 0,
       stockLocation: stockInfo?.location || "",
+      estimatedCost: calculatedEstimatedCost,
     };
 
     // Validate stock availability
@@ -108,16 +110,21 @@ export function LineItemsGrid({ items, onItemsChange, editable = true }: LineIte
 
   const handleEditItem = (item: LineItem) => {
     setEditingItem(item);
-    setFormData(item);
+    setFormData({
+      ...item,
+      estimatedCost: item.estimatedCost / (item.requiredQuantity || 1), // Set unit cost for editing
+    });
     setShowAddDialog(true);
   };
 
   const handleUpdateItem = () => {
     const stockInfo = checkStock(formData.itemName);
+    const calculatedEstimatedCost = (formData.requiredQuantity || 0) * (formData.estimatedCost || 0);
     const updatedItem = {
       ...formData,
       stockAvailable: stockInfo?.quantity || 0,
       stockLocation: stockInfo?.location || "",
+      estimatedCost: calculatedEstimatedCost,
     };
 
     // Validate stock availability
@@ -169,7 +176,7 @@ export function LineItemsGrid({ items, onItemsChange, editable = true }: LineIte
   };
 
   // Calculate total cost
-  const totalCost = items.reduce((sum, item) => sum + (item.estimatedCost || 0), 0);
+  const totalCost = items.reduce((sum, item) => sum + (item.requiredQuantity * (item.estimatedCost / (item.requiredQuantity || 1)) || 0), 0);
 
   return (
     <div className="space-y-4">
@@ -309,7 +316,7 @@ export function LineItemsGrid({ items, onItemsChange, editable = true }: LineIte
                   />
                 </div>
                 <div>
-                  <Label htmlFor="estimatedCost">Estimated Cost (₹)</Label>
+                  <Label htmlFor="estimatedCost">Estimated Cost (₹) <span className="text-xs text-gray-400">(per unit)</span></Label>
                   <Input
                     id="estimatedCost"
                     type="number"
@@ -391,7 +398,7 @@ export function LineItemsGrid({ items, onItemsChange, editable = true }: LineIte
                       <td className="p-3 border-r text-sm">{new Date(item.requiredByDate).toLocaleDateString()}</td>
                       <td className="p-3 border-r text-sm">{item.deliveryLocation}</td>
                       <td className="p-3 border-r text-sm font-semibold text-green-600">
-                        ₹{item.estimatedCost.toLocaleString()}
+                        ₹{(item.requiredQuantity * (item.estimatedCost / (item.requiredQuantity || 1))).toLocaleString()}
                       </td>
                       <td className="p-3 border-r text-sm">
                         {getStockBadge(item)}
