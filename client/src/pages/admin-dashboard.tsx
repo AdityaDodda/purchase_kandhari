@@ -431,41 +431,17 @@ export default function AdminDashboard() {
                         </td>
                         <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
                           <div className="flex space-x-2">
-                            <Button 
-                              variant="ghost" 
-                              size="sm" 
-                              className="text-[hsl(207,90%,54%)]"
-                              onClick={() => handleViewDetails(request)}
-                            >
-                              View
-                            </Button>
-                            <Button 
-                              variant="ghost" 
-                              size="sm" 
-                              className="text-green-600"
-                              onClick={() => handleApproveRequest(request.id)}
-                              disabled={request.status === 'approved' || request.status === 'rejected'}
-                            >
-                              Approve
-                            </Button>
-                            <Button 
-                              variant="ghost" 
-                              size="sm" 
-                              className="text-yellow-600"
+                            {/* <Button variant="ghost" size="sm" className="text-[hsl(207,90%,54%)]"
+                            onClick={() => handleViewDetails(request)}>View</Button> */}
+                            <Button variant="ghost" size="sm" className="text-green-600" 
+                            onClick={() => handleApproveRequest(request.id)}
+                            disabled={request.status === 'approved' || request.status === 'rejected'}>Approve</Button>
+                            <Button variant="ghost" size="sm" className="text-yellow-600"
                               onClick={() => handleReturnRequest(request.id)}
-                              disabled={request.status === 'approved' || request.status === 'rejected'}
-                            >
-                              Return
-                            </Button>
-                            <Button 
-                              variant="ghost" 
-                              size="sm" 
-                              className="text-red-600"
+                              disabled={request.status === 'approved' || request.status === 'rejected'}>Return</Button>
+                            <Button variant="ghost" size="sm" className="text-red-600"
                               onClick={() => handleRejectRequest(request.id)}
-                              disabled={request.status === 'approved' || request.status === 'rejected'}
-                            >
-                              Reject
-                            </Button>
+                              disabled={request.status === 'approved' || request.status === 'rejected'}>Reject</Button>
                           </div>
                         </td>
                       </tr>
